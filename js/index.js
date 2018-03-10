@@ -170,7 +170,7 @@ new Vue({
             }
             if (!self.arImg) {
                 self.arImg = new Image();
-                self.arImg.src = 'ar.png';
+                self.arImg.src = 'images/ar.png';
             }
 
             self.qrCtx.fillRect(0, 0, 1024, 1024);
