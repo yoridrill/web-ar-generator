@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WebARジェネレータ</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
+    <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
+    <link rel="stylesheet" href="index.css">
+
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13/dist/vue.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.min.js"></script>
+</head>
+
+<body>
+    <div id="app">
+        <section class="pure-g border_b flexAlign_c">
+            <div class="pure-u-1 pure-u-md-1-2 pad_t">
+                <img src="ar.png" width="69" height="35">
+                <span>
+                    WebARジェネレータ
+                </span>
+            </div>
+            <div class="pure-u-1 pure-u-md-1-2">
+                <div class="pure-menu pure-menu-horizontal">
+                    <ul class="pure-menu-list">
+                        <li class="pure-menu-item"><a class="pure-menu-link" v-on:click="scroll($refs.howto)">使い方</a></li>
+                        <li class="pure-menu-item"><a class="pure-menu-link" v-on:click="scroll($refs.attention)">注意</a></li>
+                        <li class="pure-menu-item"><a class="pure-menu-link" v-on:click="scroll($refs.example)">一例</a></li>
+                        <li class="pure-menu-item"><a class="pure-menu-link" v-on:click="scroll($refs.contact)">問い合わせ</a></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section>
+            <p class="pad_a font_s">
+                <a target="_blank" href="https://imgur.com/">imgur</a>などにアップロードした自作のGIFアニメや透過PNGなどを、<b>AR（拡張現実）表示</b>させるジェネレータです。<br> P名刺などにどうぞ！
+            </p>
+        </section>
+
+        <section>
+            <div class="pure-g">
+                <div class="pure-u-1 pure-u-lg-1-3 minH_300">
+                    <canvas ref="pCanvas" style="width: 100%; height: 100%"></canvas>
+                </div>
+                <div class="pure-u-1 pure-u-lg-1-3">
+                    <div class="pure-form">
+                        <template v-for="arIdx in [2,3,1,0]">
+                            <legend><span :style="{color: arData[arIdx].color}" style="opacity: 0.3">■ </span>{{arData[arIdx].title}}</legend>
+                            <input v-model="arData[arIdx].imageUrl" class="pure-input-1" placeholder="画像URL(imgurなど)">
+                            <div class="pure-g flexAlign_c">
+                                <div class="pure-u-1-5">
+                                    <select v-model.number="arData[arIdx].size[0]">
+                                        <option value="2">横</option>
+                                        <option v-for="i in 9" :value=i>{{i}}</option>
+                                    </select>
+                                </div>
+                                <div class="pure-u-1-5">
+                                    <select v-model.number="arData[arIdx].size[1]">
+                                        <option value="2">縦</option>
+                                        <option v-for="i in 9" :value=i>{{i}}</option>
+                                    </select>
+                                </div>
+                                <template v-for="check in arData[arIdx].checks">
+                                    <div class="pure-u-1-5">
+                                        <label class="pure-checkbox">
+                                            <input v-model="check.flg" type="checkbox"> {{check.label}}
+                                        </label>
+                                    </div>
+                                </template>
+                            </div>
+                        </template>
+
+                        <div class="txt_c mar_t">
+                            <button v-on:click="previewViwer" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-input-1-3">プレビュー</button>
+                            <button v-on:click="createAr" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-button-primary pure-input-1-2">AR作成！</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="pure-u-1 pure-u-lg-1-3">
+                    <div ref="createArea" v-show="createAreaVisibleFlg" class="pad_a">
+                        <transition name="fade" :duration="{enter: 500, leave: 100}">
+                            <div v-show="!creatingFlg" class="fade pad_a font_s">
+                                <h3>ジャイロAR</h3>
+                                <p>
+                                    ARは空間のある一点に固定で、自分が動くことで確認できます。（ポケGOみたいなやつです）
+                                </p>
+                                <div class="txt_c">
+                                    <button v-on:click="gyroViwer" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button">ジャイロARを見る</button>
+                                    <button v-on:click="tweetGyro" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-button-primary">ツイートする</button>
+                                </div>
+                                <h3>マーカーAR</h3>
+                                <p>
+                                    QRコードのページでマーカーを映すことで、そのマーカーの位置・サイズに合わせて表示されます。<br>
+                                    保存してご利用ください。
+                                </p>
+                                <div class="txt_c">
+                                    <img ref="qrImg" width="256" height="256">
+                                </div>
+                            </div>
+                        </transition>
+                    </div>
+                    <canvas ref="qrCanvas" class="none" width="1024" height="1024"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section ref="howto" class="pad_a">
+            <h2 class="border_b">使い方</h2>
+
+            <div class="pure-g font_s">
+                <div class="pure-u-1 pure-u-md-1-2">
+                    <p class="pad_a">
+                        このジェネレータでは、4つの画像を表示するARを作ることができます。<br>
+                        全てを設定する必要はなく、画像を最低1つどこかに設定すればAR表示可能です。
+                    </p>
+                    <p class="pad_a">
+                        各項目設定後「プレビュー」ボタンで、マーカー不要中央固定で表示するページを開きます。<br>
+                        問題がなければ「AR作成！」ボタンを押すことで、マーカー不要のジャイロAR用URLと、AR表示用マーカーを生成します。<br>
+                        マーカー画像は右クリック、もしくは長押しで保存できるので、ご活用ください。
+                    </p>
+                    <p class="pad_a">
+                        マーカーを使ってARを見るときは、マーカー内のQRコードのURLにアクセスし、そのページで「カメラを許可」し、マーカーを映すことで、ARを見ることができます。<br>
+                        別のマーカーを見るときは幾度、マーカー内のQRコードのページにアクセスし直してください。
+                    </p>
+                    <h3>画像URL</h3>
+                    <p class="pad_l">
+                        アップロードした画像のURLを入れてください。<br>
+                        （<a target="_blank" href="https://imgur.com/">imgur</a>なら、GIFは「Original GIF Link」それ以外は「Direct Link」です）<br>
+                        画像のサイズが整数比の、透過GIFアニメや透過PNGなどがおすすめです。<br>
+                        imgurは匿名アップロードも可能ですが、あとから消したい場合などに備え、アカウントを作成することをおすすめします。
+                    </p>
+                    <h3>横・縦</h3>
+                    <p class="pad_l">
+                        マーカーの1辺の長さを1としたときの、画像の大きさを設定してください。<br>
+                        元の画像サイズよりこちらが優先されます。<br>
+                        設定しない場合は2×2で表示されるマーカーが作成されます。
+                    </p>
+                </div>
+                <div class="pure-u-1 pure-u-md-1-2">
+                    <h3>チェックボックス</h3>
+                    <p class="pad_l">
+                        オプションを設定してください。
+                    </p>
+                    <ul class="list_y">
+                        <li>
+                            <b>床影</b>：<br>
+                            マーカーのある平面（地面）にシルエットを表示します。<br>
+                            「床」には設定できません。
+                        </li>
+                        <li>
+                            <b>曲げ</b>：<br>
+                            少し曲面状に曲げることで立体感を出します。<br>
+                            「真ん中」と「手前」はこちらへ反りだすように、「奥」は奥へ押し込まれたように曲がります。<br>
+                            「床」には設定できません。
+                        </li>
+                        <li>
+                            <b>ぽよ</b>：<br>
+                            ぽよぽよと跳ねさせます。<br>
+                        </li>
+                        <li>
+                            <b>回転</b>：<br>
+                            ゆっくり反時計回りに回ります。<br>
+                            「床」のみに設定できます。
+                        </li>
+                        <li>
+                            <b>球体</b>：<br>
+                            「真ん中」を包むような球体になります。<br>
+                            「床」のみに設定できます。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section ref="attention" class="pad_a">
+            <h2 class="border_b">注意</h2>
+
+            <div class="font_s">
+                <p>ARは下記の対応端末でご確認お願いします。</p>
+                <ul class="list_y">
+                    <li>
+                        iOS 11 以上の iPhone/iPad Safari<br>
+                        ※ iPhone 6S 以降の iPhone、または iPad(第5世代) 以降の iPad 及び iPad Pro
+                    </li>
+                    <li>Android Chromeブラウザ</li>
+                    <li>Webカメラ付きPC</li>
+                </ul>
+                <p>
+                    何らかの理由で公開を差し止めた場合、既に作成したマーカーも使用できなくなりますので、ご了承ください。
+                </p>
+                <p>
+                    ジェネレータとARページは対応端末が異なります。<br>
+                    マーカーは作れたがARは見られない、あるいはマーカーは作れないがARは見られるケースがあります。<br>
+                    正常に動作しない場合は、PCでご利用ください。
+                </p>
+            </div>
+        </section>
+
+        <section ref="example" class="pad_a">
+            <h2 class="border_b">一例</h2>
+
+            <div class="font_s">
+                <p>作成中…</p>
+            </div>
+        </section>
+
+        <section ref="contact" class="pad_a">
+            <h2 class="border_b">問い合わせ</h2>
+
+            <div class="font_s">
+                <p>
+                    WebARジェネレータは、<a target="_blank" href="https://twitter.com/yoridrill">@yoridrill</a>が個人で制作しています。<br>
+                    不具合などのご連絡はTwitterへお願いします。<br>
+                    複製されたほぼ同一のものの公開はご遠慮いただきたいですが、機能を追加したものの公開は歓迎しています！<br>
+                    その場合もご連絡をいただけると嬉しいです。
+                </p>
+                <p>
+                    また、<a target="_blank" href="http://amzn.asia/7dxlzD4">Amazonのほしいものリスト</a>も公開しています！<br>
+                    ガチャまわしたいです！！！！！！
+                </p>
+            </div>
+        </section>
+    </div>
+</body>
+<script src="index.js"></script>
+</html>
