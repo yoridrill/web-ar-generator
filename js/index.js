@@ -115,7 +115,6 @@ new Vue({
     },
     watch: {
         viewerUrl: function () {
-            console.log('watch');
             var self = this;
             self.pUpdate();
         }
@@ -149,7 +148,6 @@ new Vue({
                     url += '&i' + idx + '=' + el.imageUrl;
                 }
             });
-            console.log('vie');
             return url;
         }
     },
@@ -177,7 +175,7 @@ new Vue({
 
             var img = new Image();
             img.crossOrigin = "Anonymous";
-            img.src = 'http://chart.apis.google.com/chart?chs=364x364&cht=qr&chl=' + encodeURIComponent(self.viewerUrl);
+            img.src = 'https://chart.apis.google.com/chart?chs=364x364&cht=qr&chl=' + encodeURIComponent(self.viewerUrl);
 
             img.onload = function () {
                 self.createAreaVisibleFlg = true;
@@ -212,8 +210,6 @@ new Vue({
         pUpdate: function () {
             var self = this;
 
-            console.log('aaaaaaaapppp');
-
             self.arData.forEach(function (el, idx) {
                 el.mesh.material.opacity = el.imageUrl ? 0.5 : 0.1;
                 if (idx === 0) {
@@ -224,7 +220,6 @@ new Vue({
                         el.mesh.position.set(0, el.size[1]/2, 0);
                         el.mesh.scale.set(el.size[1], el.size[1], el.size[1]);
                     } else {
-                        console.log('pppp');
                         var geometry = new THREE.PlaneGeometry(1, 1);
 
                         el.mesh.geometry = geometry;
