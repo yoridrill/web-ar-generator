@@ -1,7 +1,7 @@
 new Vue({
     el: '#app',
     data: {
-        flgName: ['isShadow', 'isWarp', 'isPoyo'],
+        flgName: ['fs', 'fw', 'fp'],
         arData: [
             {
                 title: '床',
