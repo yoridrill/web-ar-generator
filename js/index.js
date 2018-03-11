@@ -72,7 +72,6 @@ new Vue({
             canvas: self.$refs.pCanvas,
             antialias: true
         });
-        self.pRenderer.setPixelRatio(window.devicePixelRatio);
         self.pRenderer.setSize(width, height);
 
         self.pScene = new THREE.Scene();
