@@ -18,7 +18,9 @@
     <div id="app">
         <section class="pure-g border_b flexAlign_c">
             <div class="pure-u-1 pure-u-md-1-2 pad_t">
-                <img src="images/ar.png" width="69" height="35">
+                <a href="https://web-ar-generator.firebaseapp.com">
+                    <img src="images/ar.png" width="69" height="35">
+                </a>
                 <span>
                     WebARジェネレータ
                 </span>
@@ -26,10 +28,10 @@
             <div class="pure-u-1 pure-u-md-1-2">
                 <div class="pure-menu pure-menu-horizontal">
                     <ul class="pure-menu-list">
-                        <li class="pure-menu-item"><a class="pure-menu-link" v-on:click="scroll($refs.howto)">使い方</a></li>
-                        <li class="pure-menu-item"><a class="pure-menu-link" v-on:click="scroll($refs.attention)">注意</a></li>
-                        <li class="pure-menu-item"><a class="pure-menu-link" v-on:click="scroll($refs.example)">一例</a></li>
-                        <li class="pure-menu-item"><a class="pure-menu-link" v-on:click="scroll($refs.contact)">問い合わせ</a></li>
+                        <li class="pure-menu-item"><a class="pure-menu-link" @click="scroll($refs.howto)">使い方</a></li>
+                        <li class="pure-menu-item"><a class="pure-menu-link" @click="scroll($refs.attention)">注意</a></li>
+                        <li class="pure-menu-item"><a class="pure-menu-link" @click="scroll($refs.example)">一例</a></li>
+                        <li class="pure-menu-item"><a class="pure-menu-link" @click="scroll($refs.contact)">問い合わせ</a></li>
                     </ul>
                 </div>
             </div>
@@ -50,7 +52,19 @@
                     <div class="pure-form">
                         <template v-for="arIdx in [2,3,1,0]">
                             <legend><span :style="{color: arData[arIdx].color}" style="opacity: 0.3">■ </span>{{arData[arIdx].title}}</legend>
-                            <input v-model="arData[arIdx].imageUrl" class="pure-input-1" placeholder="画像URL(imgurなど)">
+                            <div class="pure-g">
+                                <div class="pure-u-2-5">
+                                    <div v-if="!arData[arIdx].imageFile" class="pure-button formImageSelect">
+                                        <input @change="selectImage(arIdx,$event)" type="file" accept="image/*">
+                                        ファイルを選択
+                                    </div>
+                                    <div v-else>
+                                        <button @click="uploadImage(arIdx)" class="pure-button pure-button-primary">確定</button>
+                                        <button @click="cancelImage(arIdx)" class="pure-button">取消</button>
+                                    </div>
+                                </div>
+                                <input v-model="arData[arIdx].imageUrl" class="pure-u-3-5" placeholder="画像URL">
+                            </div>
                             <div class="pure-g flexAlign_c">
                                 <div class="pure-u-1-5">
                                     <select v-model.number="arData[arIdx].size[0]">
@@ -75,8 +89,8 @@
                         </template>
 
                         <div class="txt_c mar_t">
-                            <button v-on:click="previewViwer" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-input-1-3">プレビュー</button>
-                            <button v-on:click="createAr" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-button-primary pure-input-1-2">AR作成！</button>
+                            <button @click="previewViwer" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-input-1-3">プレビュー</button>
+                            <button @click="createAr" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-button-primary pure-input-1-2">AR作成！</button>
                         </div>
                     </div>
                 </div>
@@ -89,8 +103,8 @@
                                     ARは空間のある一点に固定で、自分が動くことで確認できます。（ポケGOみたいなやつです）
                                 </p>
                                 <div class="txt_c">
-                                    <button v-on:click="gyroViwer" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button">ジャイロARを見る</button>
-                                    <button v-on:click="tweetGyro" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-button-primary">ツイートする</button>
+                                    <button @click="gyroViwer" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button">ジャイロARを見る</button>
+                                    <button @click="tweetGyro" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-button-primary">ツイートする</button>
                                 </div>
                                 <h3>マーカーAR</h3>
                                 <p>
@@ -128,10 +142,10 @@
                     </p>
                     <h3>画像URL</h3>
                     <p class="pad_l">
-                        アップロードした画像のURLを入れてください。<br>
-                        （<a target="_blank" href="https://imgur.com/">imgur</a>なら、GIFは「Original GIF Link」それ以外は「Direct Link」です）<br>
+                        「ファイルを選択」からローカルのファイルを選択するか、アップロード済みの画像のURLをテキストボックスに入力してください。<br>
                         画像のサイズが整数比の、透過GIFアニメや透過PNGなどがおすすめです。<br>
-                        imgurは匿名アップロードも可能ですが、あとから消したい場合などに備え、アカウントを作成することをおすすめします。
+                        このページから選択し、アップロードする場合の画像の容量制限は10MBまでですが、<a target="_blank" href="https://imgur.com/">imgur</a>などで事前にアップロードしておけば、制限は特にありません。<br>
+                        このページからアップロードした画像は、あとから削除することができないため、imgurのアカウントを作りアップロードするのがおすすめです。
                     </p>
                     <h3>横・縦</h3>
                     <p class="pad_l">

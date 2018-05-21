@@ -10,6 +10,7 @@ new Vue({
                     { label: '球体', flg: false },
                     { label: 'ぽよ', flg: false }
                 ],
+                imageFile: null,
                 imageUrl: null,
                 size: [2, 2],
                 color: 'rgb(255, 0, 255)',
@@ -22,6 +23,7 @@ new Vue({
                     { label: '曲げ', flg: false },
                     { label: 'ぽよ', flg: false }
                 ],
+                imageFile: null,
                 imageUrl: null,
                 size: [2, 2],
                 color: 'rgb(0, 0, 255)',
@@ -34,6 +36,7 @@ new Vue({
                     { label: '曲げ', flg: false },
                     { label: 'ぽよ', flg: false }
                 ],
+                imageFile: null,
                 imageUrl: null,
                 size: [2, 2],
                 color: 'rgb(0, 255, 255)',
@@ -46,6 +49,7 @@ new Vue({
                     { label: '曲げ', flg: false },
                     { label: 'ぽよ', flg: false }
                 ],
+                imageFile: null,
                 imageUrl: null,
                 size: [2, 2],
                 color: 'rgb(255, 255, 0)',
@@ -60,6 +64,32 @@ new Vue({
         pScene: null,
         pCamera: null,
         gyroUrl: null
+    },
+    created: function () {
+        var self = this;
+
+        if (!location.search) return;
+
+        var arg = {};
+        var pair = location.search.substring(1).split('&');
+        for(var i=0; pair[i]; i++) {
+            var kv = pair[i].split('=');
+            arg[kv[0]] = decodeURIComponent(kv[1]);
+        }
+        var pad = new Array(self.arData.length).join('0');
+
+        arg.warpList = arg.fw && (pad + parseInt(arg.fw, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
+        arg.shodowList = arg.fs && (pad + parseInt(arg.fs, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
+        arg.poyoList = arg.fp && (pad + parseInt(arg.fp, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
+        arg.sizeList = arg.wh && (pad + pad + parseInt(arg.wh, 16).toString(10)).slice(-2 * self.arData.length).match(/.{2}/g).reverse();
+
+        self.arData.forEach(function (el, idx) {
+            self.arData[idx].imageUrl = arg['i' + idx];
+            self.arData[idx].checks[0].flg = arg.shodowList && !!Number(arg.shodowList[idx]);
+            self.arData[idx].checks[1].flg = arg.warpList && !!Number(arg.warpList[idx]);
+            self.arData[idx].checks[2].flg = arg.poyoList && !!Number(arg.poyoList[idx]);
+            self.arData[idx].size = [Number(arg.sizeList[idx][0]), Number(arg.sizeList[idx][1])];
+        });
     },
     mounted: function () {
         var self = this;
@@ -116,6 +146,7 @@ new Vue({
     watch: {
         viewerUrl: function () {
             var self = this;
+            history.replaceState('', '', self.queryString);
             self.pUpdate();
         }
     },
@@ -126,34 +157,92 @@ new Vue({
                 return !el.imageUrl || !el.imageUrl.match(/^http/);
             });
         },
-        viewerUrl: function () {
+        queryString: function () {
             var self = this;
-
-            var url = 'https://web-ar-viewer.firebaseapp.com?wh=' + self.convert10_16(self.arData.map(function (el) {
+            var str = '?wh=' + self.convert10_16(self.arData.map(function (el) {
                 return el.size.join('');
             }).reverse().join(''));
-
             self.flgName.forEach(function (val, idx) {
                 var num = self.convert2_16(self.arData.map(function (el) {
                     return el.checks[idx].flg ? 1 : 0;
                 }).reverse().join(''));
-
                 if(num !== '0') {
-                    url += '&' + val + '=' + num;
+                    str += '&' + val + '=' + num;
                 }
             });
-
             self.arData.forEach(function (el, idx) {
                 if (el.imageUrl) {
-                    url += '&i' + idx + '=' + el.imageUrl;
+                    str += '&i' + idx + '=' + el.imageUrl;
                 }
             });
-            return url;
+
+            return str;
+        },
+        viewerUrl: function () {
+            var self = this;
+
+            return 'https://web-ar-viewer.firebaseapp.com' + self.queryString;
         }
     },
     methods: {
         scroll: function (el) {
             scrollTo(0, window.pageYOffset + el.getBoundingClientRect().top);
+        },
+        selectImage: function (i,e) {
+            var self = this;
+
+            if (!e.target.files.length) {
+                return;
+            }
+
+            var file = e.target.files[0];
+            var fr = new FileReader();
+            fr.onload = function() {
+                self.arData[i].imageFile = fr.result;
+
+                var loader = new THREE.TextureLoader();
+                loader.load(fr.result, function (texture) {
+                    texture.minFilter = THREE.LinearFilter;
+                    var material = new THREE.MeshLambertMaterial({map: texture, transparent: true, depthTest: false});
+                    self.arData[i].mesh.material = material;
+                    self.pUpdate();
+                });
+            }
+            fr.readAsDataURL(file);
+        },
+        uploadImage: function (i) {
+            var self = this;
+
+            var req = new XMLHttpRequest();
+            req.open('POST', "https://api.imgur.com/3/image", true);
+            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            req.setRequestHeader('Authorization', 'Client-ID 14834ce07369dac');
+            req.onload = function (event) {
+                if (req.readyState === 4) {
+                    if (req.status === 200) {
+                        self.arData[i].imageUrl = eval('(' + req.responseText + ')').data.link;
+                        self.arData[i].imageFile = null;
+                    } else {
+                        console.log(req.statusText);
+                    }
+                }
+            };
+            req.onerror = function (event) {
+              console.log(event.type);
+            };
+            req.send('image=' + encodeURIComponent(self.arData[i].imageFile.split(',')[1]));
+        },
+        cancelImage: function (i) {
+            var self = this;
+            self.arData[i].imageFile = null;
+
+            var material = new THREE.MeshLambertMaterial({
+                color: self.arData[i].color,
+                transparent: true,
+                depthTest: false
+            });
+            self.arData[i].mesh.material = material;
+            self.pUpdate();
         },
         createAr: function () {
             var self = this;
@@ -215,6 +304,7 @@ new Vue({
                 if (idx === 0) {
                     if (el.checks[1].flg) {
                         var geometry = new THREE.SphereGeometry(0.5, 32, 32);
+                        el.mesh.rotation.set(0, -Math.PI/2, 0);
 
                         el.mesh.geometry = geometry;
                         el.mesh.position.set(0, el.size[1]/2, 0);
@@ -228,7 +318,6 @@ new Vue({
                         el.mesh.scale.set(el.size[0], el.size[1], 1);
                     }
                 } else {
-
                     el.mesh.position.set(0, el.size[1]/2, [0, -self.arData[0].size[1]/2, 0, self.arData[0].size[1]/2][idx]);
                     el.mesh.scale.set(el.size[0], el.size[1], 1);
                 }

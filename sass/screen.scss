@@ -63,3 +63,15 @@ a {
 .pWrap {
     min-height: 500px;
 }
+.formImageSelect {
+    position: relative;
+
+    input {
+        position: absolute;
+        opacity: 0;
+        height: 100%;
+        width: 100%;
+        top: 0;
+        left: 0;
+    }
+}
