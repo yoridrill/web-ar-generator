@@ -153,7 +153,7 @@ new Vue({
     computed: {
         isSubmitDisabled: function () {
             var self = this;
-            return self.arData.every(function (el) {
+            return self.creatingFlg || self.arData.every(function (el) {
                 return !el.imageUrl || !el.imageUrl.match(/^http/);
             });
         },
@@ -198,6 +198,10 @@ new Vue({
             var file = e.target.files[0];
             var fr = new FileReader();
             fr.onload = function() {
+                if(file.size > 10000000) {
+                    alert('ファイルサイズが10MBを超えています。\nファイルサイズを抑えるか、他のサービスで事前にアップロードしておいたものを使用してください。')
+                    return false;
+                }
                 self.arData[i].imageFile = fr.result;
 
                 var loader = new THREE.TextureLoader();
@@ -213,6 +217,8 @@ new Vue({
         uploadImage: function (i) {
             var self = this;
 
+            self.arData[i].imageUrl = "アップロード中…";
+
             var req = new XMLHttpRequest();
             req.open('POST', "https://api.imgur.com/3/image", true);
             req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
@@ -223,12 +229,14 @@ new Vue({
                         self.arData[i].imageUrl = eval('(' + req.responseText + ')').data.link;
                         self.arData[i].imageFile = null;
                     } else {
-                        console.log(req.statusText);
+                        self.arData[i].imageUrl = null;
+                        alert('アップロードに失敗しました。\nError: ' + req.status);
                     }
                 }
             };
             req.onerror = function (event) {
-              console.log(event.type);
+                self.arData[i].imageUrl = null;
+                alert('アップロード中にエラーが発生しました。');
             };
             req.send('image=' + encodeURIComponent(self.arData[i].imageFile.split(',')[1]));
         },
@@ -251,32 +259,53 @@ new Vue({
 
             self.creatingFlg = true;
 
-            if (!self.qrCtx) {
-                self.qrCtx = self.$refs.qrCanvas.getContext('2d');
-                self.qrCtx.fillStyle = '#fff';
-            }
-            if (!self.arImg) {
-                self.arImg = new Image();
-                self.arImg.src = 'images/ar.png';
-            }
+            // URL短縮
+            var req = new XMLHttpRequest();
+            req.open('POST', "https://api-ssl.bitly.com/v3/shorten", true);
+            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            req.onload = function (event) {
+                if (req.readyState === 4) {
 
-            self.qrCtx.fillRect(0, 0, 1024, 1024);
+                    // bitlyの制限に引っかかっても作れるようにはする
+                    if (!self.qrCtx) {
+                        self.qrCtx = self.$refs.qrCanvas.getContext('2d');
+                        self.qrCtx.fillStyle = '#fff';
+                    }
+                    if (!self.arImg) {
+                        self.arImg = new Image();
+                        self.arImg.src = 'images/ar.png';
+                    }
 
-            var img = new Image();
-            img.crossOrigin = "Anonymous";
-            img.src = 'https://chart.apis.google.com/chart?chs=364x364&cht=qr&chl=' + encodeURIComponent(self.viewerUrl);
+                    self.qrCtx.fillRect(0, 0, 1024, 1024);
 
-            img.onload = function () {
-                self.createAreaVisibleFlg = true;
-                self.qrCtx.drawImage(img, 372, 286);
-                self.qrCtx.beginPath();
-                self.qrCtx.lineWidth = 206;
-                self.qrCtx.strokeRect(205, 205, 614, 614);
-                self.qrCtx.drawImage(self.arImg, 332, 626);
+                    var img = new Image();
+                    img.crossOrigin = 'Anonymous';
 
-                self.$refs.qrImg.src = self.$refs.qrCanvas.toDataURL();
-                self.creatingFlg = false;
+                    var chartUrl = 'https://chart.apis.google.com/chart?chs=364x364&cht=qr&chl=';
+
+                    if (req.status === 200) {
+                        img.src = chartUrl + encodeURIComponent(eval('(' + req.responseText + ')').data.url);
+                    } else {
+                        img.src = chartUrl + encodeURIComponent(self.viewerUrl);
+                    }
+
+                    img.onload = function () {
+                        self.createAreaVisibleFlg = true;
+                        self.qrCtx.drawImage(img, 372, 286);
+                        self.qrCtx.beginPath();
+                        self.qrCtx.lineWidth = 206;
+                        self.qrCtx.strokeRect(205, 205, 614, 614);
+                        self.qrCtx.drawImage(self.arImg, 332, 626);
+
+                        self.$refs.qrImg.src = self.$refs.qrCanvas.toDataURL();
+                        self.creatingFlg = false;
+                    };
+                }
             };
+            req.onerror = function (event) {
+                alert('QRコード生成中にエラーが発生しました。');
+            };
+            req.send('domain=j%2emp&longUrl=' + encodeURIComponent(self.viewerUrl) + '&access_token=ea695cba9768d20a417f5162db91ddef4ba81b5c');
         },
         convert2_16: function (numStr) {
             return parseInt(numStr, 2).toString(16);

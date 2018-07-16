@@ -100,7 +100,7 @@
                             <div v-show="!creatingFlg" class="fade pad_a font_s">
                                 <h3>ジャイロAR</h3>
                                 <p>
-                                    ARは空間のある一点に固定で、自分が動くことで確認できます。（ポケGOみたいなやつです）
+                                    マーカー不要で、ARは空間のある一点に固定で、自分が動くことで確認できます。
                                 </p>
                                 <div class="txt_c">
                                     <button @click="gyroViwer" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button">ジャイロARを見る</button>
@@ -109,7 +109,7 @@
                                 <h3>マーカーAR</h3>
                                 <p>
                                     QRコードのページでマーカーを映すことで、そのマーカーの位置・サイズに合わせて表示されます。<br>
-                                    保存してご利用ください。
+                                    下記マーカーを右クリックや長押しで保存してご利用ください。
                                 </p>
                                 <div class="txt_c">
                                     <img ref="qrImg" width="256" height="256">
@@ -127,34 +127,39 @@
 
             <div class="pure-g font_s">
                 <div class="pure-u-1 pure-u-md-1-2">
+                    <h3>ジェネレータ</h3>
                     <p class="pad_a">
                         このジェネレータでは、4つの画像を表示するARを作ることができます。<br>
                         全てを設定する必要はなく、画像を最低1つどこかに設定すればAR表示可能です。
                     </p>
                     <p class="pad_a">
-                        各項目設定後「プレビュー」ボタンで、マーカー不要中央固定で表示するページを開きます。<br>
+                        ページ内プレビューエリアでは、このページからアップロードした画像やサイズなどが即時反映されますが、一部のオプションは反映されない簡易確認用となっています。
+                    </p>
+                    <p class="pad_a">
+                        「プレビュー」ボタンで、マーカー不要中央固定で表示するページを開きます。<br>
                         問題がなければ「AR作成！」ボタンを押すことで、マーカー不要のジャイロAR用URLと、AR表示用マーカーを生成します。<br>
                         マーカー画像は右クリック、もしくは長押しで保存できるので、ご活用ください。
                     </p>
+                    <h3>マーカー</h3>
                     <p class="pad_a">
                         マーカーを使ってARを見るときは、マーカー内のQRコードのURLにアクセスし、そのページで「カメラを許可」し、マーカーを映すことで、ARを見ることができます。<br>
                         別のマーカーを見るときは幾度、マーカー内のQRコードのページにアクセスし直してください。
                     </p>
+
+                </div>
+                <div class="pure-u-1 pure-u-md-1-2">
                     <h3>画像URL</h3>
                     <p class="pad_l">
                         「ファイルを選択」からローカルのファイルを選択するか、アップロード済みの画像のURLをテキストボックスに入力してください。<br>
                         画像のサイズが整数比の、透過GIFアニメや透過PNGなどがおすすめです。<br>
                         このページから選択し、アップロードする場合の画像の容量制限は10MBまでですが、<a target="_blank" href="https://imgur.com/">imgur</a>などで事前にアップロードしておけば、制限は特にありません。<br>
-                        このページからアップロードした画像は、あとから削除することができないため、imgurのアカウントを作りアップロードするのがおすすめです。
+                        このページからアップロードした画像は、あとから削除することができないため、imgurのアカウントを作りアップロードすることをおすすめします。
                     </p>
                     <h3>横・縦</h3>
                     <p class="pad_l">
                         マーカーの1辺の長さを1としたときの、画像の大きさを設定してください。<br>
-                        元の画像サイズよりこちらが優先されます。<br>
-                        設定しない場合は2×2で表示されるマーカーが作成されます。
+                        元の画像サイズよりこちらが優先され、設定しない場合は2×2で表示されるマーカーが生成されます。
                     </p>
-                </div>
-                <div class="pure-u-1 pure-u-md-1-2">
                     <h3>チェックボックス</h3>
                     <p class="pad_l">
                         オプションを設定してください。
@@ -204,13 +209,10 @@
                     <li>Webカメラ付きPC</li>
                 </ul>
                 <p>
-                    何らかの理由で公開を差し止めた場合、既に作成したマーカーも使用できなくなりますので、ご了承ください。
+                    何らかの理由で「WebARジェネレータ」の公開を差し止めた場合、既に作成したマーカーも使用できなくなることがありますので、ご了承ください。<br>
+                    また、利用にあたって生じた、あらゆる不利益または損害に対して、一切の責任を負いません。
                 </p>
-                <p>
-                    ジェネレータとARページは対応端末が異なります。<br>
-                    マーカーは作れたがARは見られない、あるいはマーカーは作れないがARは見られるケースがあります。<br>
-                    正常に動作しない場合は、PCでご利用ください。
-                </p>
+
             </div>
         </section>
 
@@ -218,7 +220,7 @@
             <h2 class="border_b">一例</h2>
 
             <div class="font_s">
-                <p>作成中…</p>
+                <p><a target="_blank" href="https://web-ar-viewer.firebaseapp.com/?wh=287adfd&fs=b&fw=b&fp=4&i0=https://i.imgur.com/6Kwc3yy.jpg&i1=https://i.imgur.com/22KUVww.gif&i2=https://i.imgur.com/MjYnaRK.png&i3=https://i.imgur.com/EPasW4u.gif&gyro=1">跳ねる文字と回転する地球と影付きのキャラクター</a></p>
             </div>
         </section>
 
@@ -227,16 +229,18 @@
 
             <div class="font_s">
                 <p>
-                    WebARジェネレータは、<a target="_blank" href="https://twitter.com/yoridrill">@yoridrill</a>が個人で制作しています。<br>
-                    不具合などのご連絡はTwitterへお願いします。<br>
-                    複製されたほぼ同一のものの公開はご遠慮いただきたいですが、機能を追加したものの公開は歓迎しています！<br>
-                    その場合もご連絡をいただけると嬉しいです。
+                    「WebARジェネレータ」は、<a target="_blank" href="https://twitter.com/yoridrill">@yoridrill</a>が個人で制作しています。<br>
+                    ご要望や不具合報告などはTwitterへお願いします。
                 </p>
                 <p>
-                    また、<a target="_blank" href="http://amzn.asia/7dxlzD4">Amazonのほしいものリスト</a>も公開しています！<br>
+                    <a target="_blank" href="https://yoridori.booth.pm/items/934441">BOOTH</a>でカンパを募集しています！<br>
+                    こちらのジェネレーターで使用できる紙吹雪や桜吹雪などの素材を置いていますので、ぜひご活用くださいませ。<br>
                     ガチャまわしたいです！！！！！！
                 </p>
             </div>
+        </section>
+        <section class="pad_t txt_c font_xs">
+            © 2018 WebARジェネレータ
         </section>
     </div>
 </body>
