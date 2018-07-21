@@ -39,52 +39,78 @@
 
         <section>
             <p class="pad_a font_s">
-                <a target="_blank" href="https://imgur.com/">imgur</a>などにアップロードした自作のGIFアニメや透過PNGなどを、<b>AR（拡張現実）表示</b>させるジェネレータです。<br> P名刺などにどうぞ！
+                自作のGIFアニメや透過PNG、JPG画像などを、<b>AR（拡張現実）表示</b>させるジェネレータです。<br>
+                簡易的なVRも作成できます。<br>
+                P名刺などにどうぞ！
             </p>
         </section>
 
         <section>
             <div class="pure-g">
-                <div class="pure-u-1 pure-u-lg-1-3 pWrap">
+                <div class="pure-u-1 pure-u-lg-1-3 pure-u-md-1-2 pWrap">
                     <canvas ref="pCanvas" style="width: 100%; height: 100%"></canvas>
                 </div>
-                <div class="pure-u-1 pure-u-lg-1-3">
+                <div class="pure-u-1 pure-u-lg-1-3 pure-u-md-1-2">
                     <div class="pure-form">
                         <template v-for="arIdx in [2,3,1,0]">
-                            <legend><span :style="{color: arData[arIdx].color}" style="opacity: 0.3">■ </span>{{arData[arIdx].title}}</legend>
+
+                            <div class="pad_t" :style="{borderTop: '1px dotted ' + arData[arIdx].color}"></div>
+
                             <div class="pure-g">
-                                <div class="pure-u-2-5">
-                                    <div v-if="!arData[arIdx].imageFile" class="pure-button formImageSelect">
-                                        <input @change="selectImage(arIdx,$event)" type="file" accept="image/*">
-                                        ファイルを選択
-                                    </div>
-                                    <div v-else>
-                                        <button @click="uploadImage(arIdx)" class="pure-button pure-button-primary">確定</button>
-                                        <button @click="cancelImage(arIdx)" class="pure-button">取消</button>
-                                    </div>
+                                <div class="pure-u-1-6 txt_c">
+                                    <div class="pad_t">{{arData[arIdx].title}}</div>
+                                    <div class="square" :style="{backgroundColor: arData[arIdx].color}"></div>
                                 </div>
-                                <input v-model="arData[arIdx].imageUrl" class="pure-u-3-5" placeholder="画像URL">
-                            </div>
-                            <div class="pure-g flexAlign_c">
-                                <div class="pure-u-1-5">
-                                    <select v-model.number="arData[arIdx].size[0]">
-                                        <option value="2">横</option>
-                                        <option v-for="i in 9" :value=i>{{i}}</option>
-                                    </select>
-                                </div>
-                                <div class="pure-u-1-5">
-                                    <select v-model.number="arData[arIdx].size[1]">
-                                        <option value="2">縦</option>
-                                        <option v-for="i in 9" :value=i>{{i}}</option>
-                                    </select>
-                                </div>
-                                <template v-for="check in arData[arIdx].checks">
-                                    <div class="pure-u-1-5">
-                                        <label class="pure-checkbox">
-                                            <input v-model="check.flg" type="checkbox"> {{check.label}}
-                                        </label>
+                                <div class="pure-u-5-6">
+                                    <div class="pure-g">
+                                        <div class="pure-u-2-5">
+                                            <div v-if="!arData[arIdx].imageFile" class="pure-button formImageSelect">
+                                                <input @change="selectImage(arIdx,$event)" type="file" accept="image/*">
+                                                ファイルを選択
+                                            </div>
+                                            <div v-else>
+                                                <button @click="uploadImage(arIdx)" class="pure-button pure-button-primary">確定</button>
+                                                <button @click="cancelImage(arIdx)" class="pure-button">取消</button>
+                                            </div>
+                                        </div>
+                                        <div class="pure-u-3-5">
+                                            <input v-model="arData[arIdx].imageUrl" class="pure-u-23-24" placeholder="画像URL">
+                                        </div>
                                     </div>
-                                </template>
+
+                                    <div class="pure-g pad_t_s flexAlign_c txt_c">
+                                        <div class="pure-u-1-4">
+                                            <label>大きさ:</label>
+                                        </div>
+                                        <div class="pure-u-1-4">
+                                            <select v-model.number="arData[arIdx].size[0]">
+                                                <option v-for="i in 9" :value="i">{{i === 2 ? '横' : i}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="pure-u-1-4">
+                                            <select v-model.number="arData[arIdx].size[1]">
+                                                <option v-for="i in 9" :value="i">{{i === 2 ? '縦' : i}}</option>
+                                            </select>
+                                        </div>
+                                        <div class="pure-u-1-4">
+                                            <label class="pure-checkbox">
+                                                <input v-model="arData[arIdx].decaFlg" type="checkbox"> ×10
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <div class="pure-g">
+                                        <template v-for="check in arData[arIdx].checks">
+                                            <div class="pure-u-1-3" style="position: relative;">
+                                                <label class="pure-checkbox">
+                                                    <input v-model="check.flg" type="checkbox"> {{check.label}}
+                                                </label>
+                                                <img style="position: absolute; top: 2px; left: 56px;" :src="check.img" width="36">
+                                            </div>
+                                        </template>
+                                    </div>
+
+                                </div>
                             </div>
                         </template>
 
@@ -94,13 +120,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="pure-u-1 pure-u-lg-1-3">
+                <div class="pure-u-1 pure-u-lg-1-3 pure-u-md-1">
                     <div ref="createArea" v-show="createAreaVisibleFlg" class="pad_a">
                         <transition name="fade" :duration="{enter: 500, leave: 100}">
                             <div v-show="!creatingFlg" class="fade pad_a font_s">
                                 <h3>ジャイロAR</h3>
                                 <p>
-                                    マーカー不要で、ARは空間のある一点に固定で、自分が動くことで確認できます。
+                                    マーカー不要で、ARは空間のある一点に固定され、端末を回転させることで確認できます。
                                 </p>
                                 <div class="txt_c">
                                     <button @click="gyroViwer" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button">ジャイロARを見る</button>
@@ -129,44 +155,61 @@
                 <div class="pure-u-1 pure-u-md-1-2">
                     <h3>ジェネレータ</h3>
                     <p class="pad_a">
-                        このジェネレータでは、4つの画像を表示するARを作ることができます。<br>
-                        全てを設定する必要はなく、画像を最低1つどこかに設定すればAR表示可能です。
+                        このジェネレータでは、<b>4つの画像を表示するAR/VR</b>を作ることができます。<br>
+                        全てを設定する必要はなく、<b>画像を最低1つどこかに設定</b>すれば表示可能です。
                     </p>
                     <p class="pad_a">
-                        ページ内プレビューエリアでは、このページからアップロードした画像やサイズなどが即時反映されますが、一部のオプションは反映されない簡易確認用となっています。
+                        <b>ページ内プレビューエリア</b>では、このページからアップロードした画像や、設定したサイズ（※「×10」は反映されません）などが即時反映されますが、一部のオプションは反映されない<b>簡易確認用</b>となっています。
                     </p>
                     <p class="pad_a">
-                        「プレビュー」ボタンで、マーカー不要中央固定で表示するページを開きます。<br>
-                        問題がなければ「AR作成！」ボタンを押すことで、マーカー不要のジャイロAR用URLと、AR表示用マーカーを生成します。<br>
+                        <b>「プレビュー」ボタン</b>で、<b>マーカー不要中央固定で表示</b>するページを開きます。<br>
+                        問題がなければ<b>「AR作成！」ボタン</b>を押すことで、<b>AR表示用マーカーを生成</b>します。<br>
                         マーカー画像は右クリック、もしくは長押しで保存できるので、ご活用ください。
                     </p>
                     <h3>マーカー</h3>
                     <p class="pad_a">
-                        マーカーを使ってARを見るときは、マーカー内のQRコードのURLにアクセスし、そのページで「カメラを許可」し、マーカーを映すことで、ARを見ることができます。<br>
+                        マーカーを使ってARを見るときは、<b>マーカー内のQRコードのURLにアクセス</b>し、そのページで「カメラを許可」し、マーカーを映すことで、ARを見ることができます。<br>
                         別のマーカーを見るときは幾度、マーカー内のQRコードのページにアクセスし直してください。
+                    </p>
+                    <h3>VR</h3>
+                    <p class="pad_a">
+                        右下のボタンからVRモードに切り替えることができ、一般的なスマホ用VRメガネで視聴が可能です。<br>
+                        キャンドゥのクリップ式のものが、カメラを塞がないのでおすすめです。
+                    </p>
+                    <h3>画像</h3>
+                    <p class="pad_a">
+                        アニメーションGIF、アルファ付きPNG、JPGを使用することができます。<br>
+                        <b>縦横の大きさは整数比、容量は1MB前後</b>が推奨です。
+                    </p>
+                    <p class="pad_a">
+                        Live2DやSpine、After Effectsで制作したアニメーションを使う場合は、<b>MOV形式</b>（12fps推奨）で書き出したものを、<b>Photoshop</b>で取り込み<b>「Web用に保存」からGIF</b>を選び、<b>「透明部分」にチェック</b>を入れて書き出すのがおすすめです。<br>
+                        縁がジャギジャギして汚い場合は「透明ディザ」や「マット」を調整すると改善します。
                     </p>
 
                 </div>
                 <div class="pure-u-1 pure-u-md-1-2">
-                    <h3>画像URL</h3>
+                    <h3>設定項目</h3>
+                    <h4>画像URL</h4>
                     <p class="pad_l">
                         「ファイルを選択」からローカルのファイルを選択するか、アップロード済みの画像のURLをテキストボックスに入力してください。<br>
-                        画像のサイズが整数比の、透過GIFアニメや透過PNGなどがおすすめです。<br>
-                        このページから選択し、アップロードする場合の画像の容量制限は10MBまでですが、<a target="_blank" href="https://imgur.com/">imgur</a>などで事前にアップロードしておけば、制限は特にありません。<br>
-                        このページからアップロードした画像は、あとから削除することができないため、imgurのアカウントを作りアップロードすることをおすすめします。
                     </p>
-                    <h3>横・縦</h3>
                     <p class="pad_l">
-                        マーカーの1辺の長さを1としたときの、画像の大きさを設定してください。<br>
-                        元の画像サイズよりこちらが優先され、設定しない場合は2×2で表示されるマーカーが生成されます。
+                        このページからアップロードする場合の画像の容量制限は10MBまでですが、<a target="_blank" href="https://imgur.com/">imgur</a>などで事前にアップロードしておけば、10MB以上のものを使用することも可能です。<br>
+                        このページからアップロードした画像は、あとから削除することができないため、事前にアップロードすることをおすすめします。
                     </p>
-                    <h3>チェックボックス</h3>
+                    <h4>大きさ</h4>
                     <p class="pad_l">
-                        オプションを設定してください。
+                        マーカーの<b>1辺の長さを1</b>としたときの、<b>画像の大きさ</b>を設定してください。<br>
+                        <b>元の画像サイズよりこちらが優先</b>され、設定しない場合は2×2で表示されるマーカーが生成されます。
                     </p>
+                    <p class="pad_l">
+                        <b>「×10」</b>にチェックを入れると、<b>10倍の大きさで表示</b>します。<br>
+                        VRで一面に表示したい場合や、ARで床を海のようにしたりなど、カメラに収まりきらない大きさのものを表示したいときに設定してください。
+                    </p>
+                    <h4>オプション</h4>
                     <ul class="list_y">
                         <li>
-                            <b>床影</b>：<br>
+                            <b>影</b>：<br>
                             マーカーのある平面（地面）にシルエットを表示します。<br>
                             「床」には設定できません。
                         </li>
@@ -208,6 +251,12 @@
                     <li>Android Chromeブラウザ</li>
                     <li>Webカメラ付きPC</li>
                 </ul>
+
+                <p>
+                    VR機能は試験的に入れているため、上記環境でも正常に表示されない場合があります。<br>
+                    また、視差などを専門的な知識のない個人が調整しているため精度が低いです。<br>
+                    VRの使用ができない12歳未満のお子様はもちろん、大人も長時間の視聴は避けてください。
+                </p>
                 <p>
                     何らかの理由で「WebARジェネレータ」の公開を差し止めた場合、既に作成したマーカーも使用できなくなることがありますので、ご了承ください。<br>
                     また、利用にあたって生じた、あらゆる不利益または損害に対して、一切の責任を負いません。
@@ -234,8 +283,8 @@
                 </p>
                 <p>
                     <a target="_blank" href="https://yoridori.booth.pm/items/934441">BOOTH</a>でカンパを募集しています！<br>
-                    こちらのジェネレーターで使用できる紙吹雪や桜吹雪などの素材を置いていますので、ぜひご活用くださいませ。<br>
-                    ガチャまわしたいです！！！！！！
+                    ガチャまわしたいです！！！！！！<br>
+                    こちらのジェネレーターで使用できる紙吹雪や桜吹雪などの素材を置いていますので、ぜひご活用くださいませ。
                 </p>
             </div>
         </section>

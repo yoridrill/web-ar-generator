@@ -6,53 +6,57 @@ new Vue({
             {
                 title: '床',
                 checks: [
-                    { label: '回転', flg: false },
-                    { label: '球体', flg: false },
-                    { label: 'ぽよ', flg: false }
+                    { label: '回転', flg: false, img: "images/rotate.gif" },
+                    { label: '球体', flg: false, img: "images/sphere.png" },
+                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
                 ],
                 imageFile: null,
                 imageUrl: null,
                 size: [2, 2],
-                color: 'rgb(255, 0, 255)',
+                decaFlg: false,
+                color: 'rgb(255, 0, 180)',
                 mesh: null
             },
             {
                 title: '奥',
                 checks: [
-                    { label: '床影', flg: false },
-                    { label: '曲げ', flg: false },
-                    { label: 'ぽよ', flg: false }
+                    { label: '影', flg: false, img: "images/shadow.png" },
+                    { label: '曲げ', flg: false, img: "images/warp_bg.png" },
+                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
                 ],
                 imageFile: null,
                 imageUrl: null,
                 size: [2, 2],
+                decaFlg: false,
                 color: 'rgb(0, 0, 255)',
                 mesh: null
             },
             {
                 title: '真ん中',
                 checks: [
-                    { label: '床影', flg: false },
-                    { label: '曲げ', flg: false },
-                    { label: 'ぽよ', flg: false }
+                    { label: '影', flg: false, img: "images/shadow.png" },
+                    { label: '曲げ', flg: false, img: "images/warp.png" },
+                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
                 ],
                 imageFile: null,
                 imageUrl: null,
                 size: [2, 2],
-                color: 'rgb(0, 255, 255)',
+                decaFlg: false,
+                color: 'rgb(0, 220, 255)',
                 mesh: null
             },
             {
                 title: '手前',
                 checks: [
-                    { label: '床影', flg: false },
-                    { label: '曲げ', flg: false },
-                    { label: 'ぽよ', flg: false }
+                    { label: '影', flg: false, img: "images/shadow.png" },
+                    { label: '曲げ', flg: false, img: "images/warp.png" },
+                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
                 ],
                 imageFile: null,
                 imageUrl: null,
                 size: [2, 2],
-                color: 'rgb(255, 255, 0)',
+                decaFlg: false,
+                color: 'rgb(100, 255, 0)',
                 mesh: null
             }
         ],
@@ -81,6 +85,7 @@ new Vue({
         arg.warpList = arg.fw && (pad + parseInt(arg.fw, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.shodowList = arg.fs && (pad + parseInt(arg.fs, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.poyoList = arg.fp && (pad + parseInt(arg.fp, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
+        arg.decaList = arg.fd && (pad + parseInt(arg.fd, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.sizeList = arg.wh && (pad + pad + parseInt(arg.wh, 16).toString(10)).slice(-2 * self.arData.length).match(/.{2}/g).reverse();
 
         self.arData.forEach(function (el, idx) {
@@ -88,6 +93,7 @@ new Vue({
             self.arData[idx].checks[0].flg = arg.shodowList && !!Number(arg.shodowList[idx]);
             self.arData[idx].checks[1].flg = arg.warpList && !!Number(arg.warpList[idx]);
             self.arData[idx].checks[2].flg = arg.poyoList && !!Number(arg.poyoList[idx]);
+            self.arData[idx].decaFlg = arg.decaList && !!Number(arg.decaList[idx]);
             self.arData[idx].size = [Number(arg.sizeList[idx][0]), Number(arg.sizeList[idx][1])];
         });
     },
@@ -170,6 +176,14 @@ new Vue({
                     str += '&' + val + '=' + num;
                 }
             });
+            //decaFlg
+            var numDeca = self.convert2_16(self.arData.map(function (el) {
+                return el.decaFlg ? 1 : 0;
+            }).reverse().join(''));
+            if(numDeca !== '0') {
+                str += '&fd=' + numDeca;
+            }
+
             self.arData.forEach(function (el, idx) {
                 if (el.imageUrl) {
                     str += '&i' + idx + '=' + el.imageUrl;

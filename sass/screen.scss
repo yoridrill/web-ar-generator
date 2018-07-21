@@ -35,6 +35,9 @@ a {
 .pad_t {
     padding-top: 10px;
 }
+.pad_t_s {
+    padding-top: 2px;
+}
 .pad_l {
     padding-left: 10px;
 }
@@ -68,6 +71,9 @@ a {
 }
 .formImageSelect {
     position: relative;
+    font-size: 78%;
+    width: 95%;
+    line-height: 26px;
 
     input {
         position: absolute;
@@ -77,4 +83,10 @@ a {
         top: 0;
         left: 0;
     }
+}
+.square {
+    width: 50px;
+    height: 50px;
+    display: inline-block;
+    opacity: 0.3;
 }
