@@ -20,7 +20,7 @@ new Vue({
             {
                 title: '奥',
                 checks: [
-                    { label: '影', flg: false, img: "images/shadow.png" },
+                    { label: '影　', flg: false, img: "images/shadow.png" },
                     { label: '曲げ', flg: false, img: "images/warp_bg.png" },
                     { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
                 ],
@@ -34,7 +34,7 @@ new Vue({
             {
                 title: '真ん中',
                 checks: [
-                    { label: '影', flg: false, img: "images/shadow.png" },
+                    { label: '影　', flg: false, img: "images/shadow.png" },
                     { label: '曲げ', flg: false, img: "images/warp.png" },
                     { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
                 ],
@@ -48,7 +48,7 @@ new Vue({
             {
                 title: '手前',
                 checks: [
-                    { label: '影', flg: false, img: "images/shadow.png" },
+                    { label: '影　', flg: false, img: "images/shadow.png" },
                     { label: '曲げ', flg: false, img: "images/warp.png" },
                     { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
                 ],
@@ -58,16 +58,35 @@ new Vue({
                 decaFlg: false,
                 color: 'rgb(100, 255, 0)',
                 mesh: null
+            },
+            {
+                title: '全天球',
+                checks: [
+                    { label: '回転', flg: false, img: "images/rotate_vr.gif" },
+                    { label: '魚眼', flg: false, img: "images/lens.png" },
+                    { label: '青み', flg: false, img: "images/blue.png" }
+                ],
+                imageFile: null,
+                imageUrl: null,
+                size: [9, 9],
+                decaFlg: false,
+                color: 'rgb(150, 170, 190)',
+                mesh: null
             }
         ],
-        arImg: null,
-        qrCtx: null,
-        createAreaVisibleFlg: false,
+        arImg: new Array(4),
+        qrCanvas: new Array(4),
+        qrCtx: new Array(4),
         creatingFlg: false,
+        resultFlg: false,
         pRenderer: null,
         pScene: null,
         pCamera: null,
-        gyroUrl: null
+        pMarkerAr0: null,
+        pMultiGroup: null,
+        tweetUrl: null,
+        optionType: 'normal', // ['vr'|'multi']
+        vrPos: [0, 0, -4]
     },
     created: function () {
         var self = this;
@@ -96,9 +115,29 @@ new Vue({
             self.arData[idx].decaFlg = arg.decaList && !!Number(arg.decaList[idx]);
             self.arData[idx].size = [Number(arg.sizeList[idx][0]), Number(arg.sizeList[idx][1])];
         });
+
+        if (self.arData[4].imageUrl) {
+            self.optionType = 'vr';
+        } else if (arg.multi) {
+            self.optionType = 'multi';
+        }
+
+        if (arg.vrPos) {
+            self.vrPos = decodeURIComponent(arg.vrPos).split(' ');
+        }
     },
     mounted: function () {
         var self = this;
+
+        for (var i = 0; i < 4; i++) {
+            self.arImg[i] = new Image();
+            self.arImg[i].src = 'images/ar' + i + '.png';
+            self.qrCanvas[i] = document.createElement('canvas');
+            self.qrCtx[i] = self.qrCanvas[i].getContext('2d');
+            self.qrCanvas[i].width = 1024;
+            self.qrCanvas[i].height = 1024;
+            self.qrCtx[i].fillStyle = '#fff';
+        }
 
         var width  = self.$refs.pCanvas.offsetWidth;
         var height = self.$refs.pCanvas.offsetHeight;
@@ -120,22 +159,18 @@ new Vue({
 
         var directionalLight = new THREE.DirectionalLight(0xffffff);
         directionalLight.position.set(0, 100, 100);
-        self.pScene.add( directionalLight );
+        self.pScene.add(directionalLight);
         var light = new THREE.AmbientLight(0xffffff, 0.5);
         self.pScene.add(light);
 
-        var geometry = new THREE.PlaneGeometry(1, 1);
-        var material = new THREE.MeshLambertMaterial({color: 0x000000});
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.rotation.set(-Math.PI/2, 0, 0);
-        mesh.position.set(0, -0.015, 0);
-        self.pScene.add(mesh);
-        var geometry = new THREE.PlaneGeometry(0.5, 0.5);
-        var material = new THREE.MeshLambertMaterial({color: 0xffffff});
-        var mesh = new THREE.Mesh(geometry, material);
-        mesh.rotation.set(-Math.PI/2, 0, 0);
-        mesh.position.set(0, -0.01, 0);
-        self.pScene.add(mesh);
+        self.drawMarker(0);
+        var geometry = new THREE.PlaneGeometry(1.24, 1.24);
+        var arTexture = new THREE.CanvasTexture(self.qrCanvas[0]);
+        var material = new THREE.MeshLambertMaterial({map: arTexture});
+        self.pMarkerAr0 = new THREE.Mesh(geometry, material);
+        self.pMarkerAr0.rotation.set(-Math.PI/2, 0, 0);
+        self.pMarkerAr0.position.set(0, -0.01, 0);
+        self.pScene.add(self.pMarkerAr0);
 
         self.arData.forEach(function (el, idx) {
             var geometry = new THREE.PlaneGeometry(1, 1);
@@ -150,6 +185,11 @@ new Vue({
         self.pUpdate();
     },
     watch: {
+        optionType: function () {
+            var self = this;
+            self.resultFlg = false;
+            self.pToggleLayout();
+        },
         viewerUrl: function () {
             var self = this;
             history.replaceState('', '', self.queryString);
@@ -185,17 +225,23 @@ new Vue({
             }
 
             self.arData.forEach(function (el, idx) {
-                if (el.imageUrl) {
+                if (el.imageUrl && (idx !== 4 || self.optionType === 'vr')) {
                     str += '&i' + idx + '=' + el.imageUrl;
                 }
             });
+
+            if (self.optionType === 'multi') {
+                str += '&multi=1';
+            } else if (self.optionType === 'vr') {
+                str += '&vrPos=' + encodeURIComponent(self.vrPos.join(' '));
+            }
 
             return str;
         },
         viewerUrl: function () {
             var self = this;
 
-            return 'https://web-ar-viewer.firebaseapp.com' + self.queryString;
+            return 'https://web-ar-viewer.firebaseapp.com' + (self.optionType === 'vr' ? '/vr' : '') + self.queryString;
         }
     },
     methods: {
@@ -269,8 +315,9 @@ new Vue({
         createAr: function () {
             var self = this;
 
-            self.gyroUrl = self.viewerUrl + '&gyro=1';
+            self.tweetUrl = self.viewerUrl + (self.optionType === 'vr' ? '' : '&gyro=1');
 
+            self.resultFlg = false;
             self.creatingFlg = true;
 
             // URL短縮
@@ -281,39 +328,33 @@ new Vue({
                 if (req.readyState === 4) {
 
                     // bitlyの制限に引っかかっても作れるようにはする
-                    if (!self.qrCtx) {
-                        self.qrCtx = self.$refs.qrCanvas.getContext('2d');
-                        self.qrCtx.fillStyle = '#fff';
+                    if (req.status === 200) {
+                        var qrUrl = eval('(' + req.responseText + ')').data.url;
+                    } else {
+                        var qrUrl = self.viewerUrl;
                     }
-                    if (!self.arImg) {
-                        self.arImg = new Image();
-                        self.arImg.src = 'images/ar.png';
-                    }
-
-                    self.qrCtx.fillRect(0, 0, 1024, 1024);
 
                     var img = new Image();
                     img.crossOrigin = 'Anonymous';
-
-                    var chartUrl = 'https://chart.apis.google.com/chart?chs=364x364&cht=qr&chl=';
-
-                    if (req.status === 200) {
-                        img.src = chartUrl + encodeURIComponent(eval('(' + req.responseText + ')').data.url);
-                    } else {
-                        img.src = chartUrl + encodeURIComponent(self.viewerUrl);
-                    }
+                    img.src = 'https://chart.apis.google.com/chart?chs=' + (self.optionType==='vr' ? '512x512' : '364x364') + '&cht=qr&chl=' + encodeURIComponent(qrUrl);
 
                     img.onload = function () {
-                        self.createAreaVisibleFlg = true;
-                        self.qrCtx.drawImage(img, 372, 286);
-                        self.qrCtx.beginPath();
-                        self.qrCtx.lineWidth = 206;
-                        self.qrCtx.strokeRect(205, 205, 614, 614);
-                        self.qrCtx.drawImage(self.arImg, 332, 626);
-
-                        self.$refs.qrImg.src = self.$refs.qrCanvas.toDataURL();
+                        self.resultFlg = true;
                         self.creatingFlg = false;
+                        self.drawMarker(0, img);
                     };
+
+                    if (self.optionType === 'multi') {
+                        var imgMini = new Image();
+                        imgMini.crossOrigin = 'Anonymous';
+                        imgMini.src = 'https://chart.apis.google.com/chart?chs=244x244&cht=qr&chl=' + encodeURIComponent(qrUrl);
+
+                        imgMini.onload = function () {
+                            for (var i = 1; i < 4; i++) {
+                                self.drawMarker(i, imgMini);
+                            }
+                        };
+                    }
                 }
             };
             req.onerror = function (event) {
@@ -333,11 +374,39 @@ new Vue({
         },
         gyroViwer: function () {
             var self = this;
-            window.open(self.gyroUrl);
+            window.open(self.tweetUrl);
         },
-        tweetGyro: function () {
+        tweet: function () {
             var self = this;
-            window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent('WebARジェネレータでARを作ったよ！') + '&url=' + encodeURIComponent(self.gyroUrl) + '&hashtags=WebARジェネレータ');
+            if (self.optionType === 'vr') {
+                var comment = encodeURIComponent('WebARジェネレータでVRを作ったよ！');
+            } else {
+                var comment = encodeURIComponent('WebARジェネレータでARを作ったよ！');
+            }
+            window.open('https://twitter.com/intent/tweet?text=' + comment + '&url=' + encodeURIComponent(self.tweetUrl) + '&hashtags=WebARジェネレータ');
+        },
+        drawMarker: function (index, qrImg) {
+            var self = this;
+
+            self.qrCtx[index].fillRect(0, 0, 1024, 1024);
+
+            if (self.optionType === 'vr' && qrImg) {
+                self.qrCtx[index].drawImage(qrImg, 0, 0, 512, 512, 0, 0, 1024, 1024);
+                self.$refs.vr_img_0.src = self.qrCanvas[index].toDataURL();
+                return;
+            }
+
+            if (qrImg) {
+                self.qrCtx[index].drawImage(qrImg, [372, 316, 390, 464][index], [286, 316, 316, 316][index]);
+            }
+            self.qrCtx[index].beginPath();
+            self.qrCtx[index].lineWidth = 206;
+            self.qrCtx[index].strokeRect(205, 205, 614, 614);
+            self.qrCtx[index].drawImage(self.arImg[index], 332, 626);
+
+            if (qrImg) {
+                self.$refs[self.optionType+ '_img_' + index].src = self.qrCanvas[index].toDataURL();
+            }
         },
         pUpdate: function () {
             var self = this;
@@ -347,25 +416,74 @@ new Vue({
                 if (idx === 0) {
                     if (el.checks[1].flg) {
                         var geometry = new THREE.SphereGeometry(0.5, 32, 32);
-                        el.mesh.rotation.set(0, -Math.PI/2, 0);
-
                         el.mesh.geometry = geometry;
-                        el.mesh.position.set(0, el.size[1]/2, 0);
-                        el.mesh.scale.set(el.size[1], el.size[1], el.size[1]);
+                        el.mesh.rotation.set(0, -Math.PI/2, 0);
+                        el.mesh.position.set(0, el.size[0]/2, 0);
+                        el.mesh.scale.set(el.size[0], el.size[0], el.size[0]);
                     } else {
                         var geometry = new THREE.PlaneGeometry(1, 1);
-
                         el.mesh.geometry = geometry;
                         el.mesh.position.set(0, 0, 0);
                         el.mesh.rotation.set(-Math.PI/2, 0, 0);
                         el.mesh.scale.set(el.size[0], el.size[1], 1);
                     }
+                } else if (idx === 4) {
+                    var geometry = new THREE.SphereGeometry(20, 32, 32);
+                    el.mesh.geometry = geometry;
+                    el.mesh.material.side = THREE.BackSide;
+                    el.mesh.rotation.set(0, -Math.PI/2, 0);
+                    el.mesh.position.set(0, 0, 0);
                 } else {
-                    el.mesh.position.set(0, el.size[1]/2, [0, -self.arData[0].size[1]/2, 0, self.arData[0].size[1]/2][idx]);
+                    if (self.optionType === 'multi') {
+                        var pos = [
+                            {x: 0, z: 0},
+                            {x: 2, z: -2},
+                            {x: 0, z: -2},
+                            {x: -2, z: -2}
+                        ];
+                    } else {
+                        var pos = [
+                            {x: 0, z: 0},
+                            {x: 0, z: -self.arData[0].size[1]/2},
+                            {x: 0, z: 0},
+                            {x: 0, z: self.arData[0].size[1]/2}
+                        ];
+                    }
+                    el.mesh.position.set(pos[idx].x, el.size[1]/2, pos[idx].z);
                     el.mesh.scale.set(el.size[0], el.size[1], 1);
                 }
             });
             self.pRenderer.render(self.pScene, self.pCamera);
+        },
+        pToggleLayout: function () {
+            var self = this;
+
+            if (!self.pMultiGroup) {
+                self.pMultiGroup = new THREE.Group();
+                for (var i = 1; i < 4; i++) {
+                    self.drawMarker(i);
+                    var geometry = new THREE.PlaneGeometry(1.24, 1.24);
+                    var arTexture = new THREE.CanvasTexture(self.qrCanvas[i]);
+                    var material = new THREE.MeshLambertMaterial({map: arTexture});
+                    var mesh = new THREE.Mesh(geometry, material);
+                    mesh.rotation.set(-Math.PI/2, 0, 0);
+                    mesh.position.set([0, 2, 0, -2][i], -0.01, [0, -2, -2, -2][i]);
+                    self.pMultiGroup.add(mesh);
+                }
+                self.pScene.add(self.pMultiGroup);
+            }
+
+            if (self.optionType === 'multi') {
+                self.pCamera.position.set(10, 15, 15);
+                self.pCamera.lookAt(new THREE.Vector3(1, 2, 0));
+                self.pMultiGroup.visible = true;
+            } else {
+                self.pCamera.position.set(6, 10, 10);
+                self.pCamera.lookAt(new THREE.Vector3(0, 1, 0));
+                self.pMultiGroup.visible = false;
+            }
+
+            self.pMarkerAr0.visible = (self.optionType !== 'vr');
         }
     }
 });
