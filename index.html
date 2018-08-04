@@ -5,11 +5,11 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="twitter:card" content="summary" />
-    <meta name="twitter:url" content="https://web-ar-generator.firebaseapp.com/" />
     <meta name="twitter:image" content="https://yoridrill.github.io/web-ar-generator/images/share.png" />
-    <meta name="og:title" content="WebARジェネレータ" />
-    <meta name="og:description" content="GIFやPNGを入れるだけで、ARを作ることができるジェネレータです。" />
-    <meta name="og:image" content="https://yoridrill.github.io/web-ar-generator/images/share_ogp.png" />
+    <meta property="og:url" content="https://web-ar-generator.firebaseapp.com/" />
+    <meta property="og:title" content="WebARジェネレータ" />
+    <meta property="og:description" content="GIFやPNGを入れるだけで、ARを作ることができるジェネレータです。" />
+    <meta property="og:image" content="https://yoridrill.github.io/web-ar-generator/images/share_ogp.png" />
     <title>WebARジェネレータ</title>
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
@@ -66,11 +66,11 @@
                             <div class="pure-form">
 
                                 <div class="pad_a">
-                                    <button v-show="optionType !== 'multi'" @click="optionType = 'multi'" class="pure-button font_xs">○ 複数マーカー</button>
-                                    <button v-show="optionType === 'multi'" @click="optionType = 'normal'" class="pure-button pure-button-active font_xs">● 複数マーカー</button>
+                                    <button v-show="optionType !== 'multi'" @click="optionType = 'multi'" class="pure-button font_xs">複数マーカーモード</button>
+                                    <button v-show="optionType === 'multi'" @click="optionType = 'normal'" class="pure-button pure-button-active pure-button-primary font_xs">複数マーカーモード</button>
 
-                                    <button v-show="optionType !== 'vr'" @click="optionType = 'vr'" class="pure-button font_xs">○ VRオプション</button>
-                                    <button v-show="optionType === 'vr'" @click="optionType = 'normal'" class="pure-button pure-button-active font_xs">● VRオプション</button>
+                                    <button v-show="optionType !== 'vr'" @click="optionType = 'vr'" class="pure-button font_xs">VRモード</button>
+                                    <button v-show="optionType === 'vr'" @click="optionType = 'normal'" class="pure-button pure-button-active pure-button-primary font_xs">VRモード</button>
 
                                     <div class="font_s pad_t pad_l" v-show="optionType === 'multi'">
                                         マーカーそれぞれに表示する画像を設定できます。<br>
@@ -79,7 +79,7 @@
 
                                     <div v-show="optionType === 'vr'">
                                         <div class="font_s pad_t pad_l">
-                                            全天球画像を設定すると、AR（カメラ機能）は無効になり、VR専用として作成されます。
+                                            このモードで設定するとAR（カメラ機能）は無効になり、VR専用として作成されます。
                                         </div>
                                         <div class="pure-g pad_t flexAlign_c txt_c">
                                             <div class="pure-u-1-4">
@@ -124,7 +124,7 @@
                                             </div>
                                             <div class="pure-u-5-6">
                                                 <div class="pure-g" :class="{'pad_b': arIdx ===4}">
-                                                    <div class="pure-u-2-5 txt_c">
+                                                    <div class="pure-u-1-2 txt_c">
                                                         <div v-if="!arData[arIdx].imageFile" class="pure-button formImageSelect">
                                                             <input @change="selectImage(arIdx,$event)" type="file" accept="image/*">
                                                             ファイル選択
@@ -134,7 +134,7 @@
                                                             <button @click="cancelImage(arIdx)" class="pure-button">取消</button>
                                                         </div>
                                                     </div>
-                                                    <div class="pure-u-3-5">
+                                                    <div class="pure-u-1-2">
                                                         <input v-model="arData[arIdx].imageUrl" class="pure-u-23-24" placeholder="画像URL">
                                                     </div>
                                                 </div>
@@ -275,13 +275,14 @@
                                 キャンドゥのクリップ式のものが、カメラを塞がないので、マーカーを映しつつVRを見ることができ、おすすめです。
                             </p>
                             <p class="pad_a">
-                                また、「VRオプション」から「Google ストリートビュー」アプリなどで撮影した<b>全天球画像</b>を、背景として設定することもできます。<br>
+                                また、「VRモード」から「Google ストリートビュー」アプリなどで撮影した<b>全天球画像</b>を、背景として設定することもできます。<br>
                                 設定した場合、ARは無効になり、本体カメラを起動しないVR専用として作成されます。
                             </p>
                             <h3>画像</h3>
                             <p class="pad_a">
                                 アニメーションGIF、アルファ付きPNG、JPGを使用することができます。<br>
-                                <b>縦横の大きさは整数比、容量は1MB前後</b>が推奨です。
+                                <b>縦横の大きさは整数比、容量は1MB前後</b>が推奨です。<br>
+                                フレームが最適化されたGIFアニメーションは現状ジェネレータの対応が不完全なので、非推奨です。
                             </p>
                             <p class="pad_a">
                                 Live2DやSpine、After Effectsで制作したアニメーションを使う場合は、<b>MOV形式</b>（12fps推奨）で書き出したものを、<b>Photoshop</b>で取り込み<b>「Web用に保存」からGIF</b>を選び、<b>「透明部分」にチェック</b>を入れて書き出すのがおすすめです。<br>
@@ -297,6 +298,8 @@
                             </p>
                             <p class="pad_l">
                                 このページからアップロードする場合の画像の容量制限は10MBまでですが、<a target="_blank" href="https://imgur.com/">imgur</a>などで事前にアップロードしておけば、10MB以上のものを使用することも可能です。<br>
+                                imgurにアップロードした場合は<b>「Original GIF Link」</b>または<b>「Direct Link」</b>のURLを貼り付けてください。<br>
+                                CORS(クロスドメイン通信)で許可されている画像しか使用できないため、TwitterやPixivなどにアップロードした画像は使用することができません。<br>
                                 このページからアップロードした画像は、あとから削除することができないため、事前にアップロードすることをおすすめします。
                             </p>
                             <h4>大きさ</h4>
@@ -308,7 +311,7 @@
                                 <b>「×10」</b>にチェックを入れると、<b>10倍の大きさで表示</b>します。<br>
                                 床を海のようにしたりなど、カメラに収まりきらない大きさのものを表示したいときに設定してください。
                             </p>
-                            <h4>チェックボックス</h4>
+                            <h4>オプション</h4>
                             <ul class="list_y">
                                 <li>
                                     <b>影</b><br>
@@ -345,7 +348,7 @@
                                     撮って出しの全天球画像は色合いが地味なので、設定することをおすすめします。
                                 </li>
                             </ul>
-                            <h4>複数マーカー</h4>
+                            <h4>複数マーカーモード</h4>
                             <p class="pad_l">
                                 複数のマーカーそれぞれに画像を映すARを作成できます。<br>
                                 それぞれのマーカーに載っているQRコードは同じなので、どれかにアクセスすれば4つともで表示できます。<br>
@@ -353,7 +356,7 @@
                                 前に作成したマーカーと次に作成したマーカーで同時表示することはできません。<br>
                                 端末負荷が高いので、スペック次第ではブラウザが落ちる可能性があります。
                             </p>
-                            <h4>VRオプション</h4>
+                            <h4>VRモード</h4>
                             <p class="pad_l">
                                 カメラは使用せず、全天球画像を背景として表示するVRを作成できます。<br>
                                 カメラを使わないため、画像はマーカーの場所ではなく空間のある一点に固定され、ジャイロセンサーによって場所を認識します。<br>

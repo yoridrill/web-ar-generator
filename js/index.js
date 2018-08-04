@@ -200,7 +200,9 @@ new Vue({
         isSubmitDisabled: function () {
             var self = this;
             return self.creatingFlg || self.arData.every(function (el) {
-                return !el.imageUrl || !el.imageUrl.match(/^http/);
+                return !el.imageUrl;
+            }) || self.arData.some(function (el) {
+                return el.imageUrl && !el.imageUrl.match(/^http/);
             });
         },
         queryString: function () {
