@@ -243,7 +243,7 @@ new Vue({
         viewerUrl: function () {
             var self = this;
 
-            return 'https://web-ar-viewer.firebaseapp.com' + (self.optionType === 'vr' ? '/vr' : '') + self.queryString;
+            return 'https://web-ar-viewer.firebaseapp.com/' + (self.optionType === 'vr' ? 'vr/' : '') + self.queryString;
         }
     },
     methods: {
@@ -316,6 +316,10 @@ new Vue({
         },
         createAr: function () {
             var self = this;
+
+            if (self.optionType === 'vr' && !self.arData[4].imageUrl && window.confirm('VRモードがオンになっていますが、全天球画像が設定されていません。\nVRモードをオフにしてARを作りますか？')) {
+                self.optionType = 'normal';
+            }
 
             self.tweetUrl = self.viewerUrl + (self.optionType === 'vr' ? '' : '&gyro=1');
 
