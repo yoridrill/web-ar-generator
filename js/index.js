@@ -1,73 +1,126 @@
 new Vue({
     el: '#app',
     data: {
-        flgName: ['fs', 'fw', 'fp'],
+        flgName: ['fw', 'fs', 'fp', 'fk'],
         arData: [
             {
-                title: '床',
+                openFlg: false,
+                detailOpenFlg: false,
+                title: '床 (または球)',
                 checks: [
-                    { label: '回転', flg: false, img: "images/rotate.gif" },
                     { label: '球体', flg: false, img: "images/sphere.png" },
-                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
+                    { label: '回転', flg: false, img: "images/rotate.gif" },
+                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" },
+                    { label: 'キラ', flg: false, img: "images/kira.gif" }
                 ],
-                imageFile: null,
-                imageUrl: null,
+                image: {
+                    file: null,
+                    url: null
+                },
+                map: {
+                    file: null,
+                    url: null
+                },
+                availableSizeX: [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90],
+                availableSizeY: [0,1,2,3,4,5,6,7,8,9],
                 size: [2, 2],
                 decaFlg: false,
                 color: 'rgb(255, 0, 180)',
                 mesh: null
             },
             {
+                openFlg: false,
+                detailOpenFlg: false,
                 title: '奥',
                 checks: [
-                    { label: '影　', flg: false, img: "images/shadow.png" },
                     { label: '曲げ', flg: false, img: "images/warp_bg.png" },
-                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
+                    { label: '影　', flg: false, img: "images/shadow.png" },
+                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" },
+                    { label: 'キラ', flg: false, img: "images/kira.gif" }
                 ],
-                imageFile: null,
-                imageUrl: null,
+                image: {
+                    file: null,
+                    url: null
+                },
+                map: {
+                    file: null,
+                    url: null
+                },
+                availableSizeX: [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90],
+                availableSizeY: [1,2,3,4,5,6,7,8,9],
                 size: [2, 2],
                 decaFlg: false,
                 color: 'rgb(0, 0, 255)',
                 mesh: null
             },
             {
+                openFlg: true,
+                detailOpenFlg: false,
                 title: '真ん中',
                 checks: [
-                    { label: '影　', flg: false, img: "images/shadow.png" },
                     { label: '曲げ', flg: false, img: "images/warp.png" },
-                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
+                    { label: '影　', flg: false, img: "images/shadow.png" },
+                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" },
+                    { label: 'キラ', flg: false, img: "images/kira.gif" }
                 ],
-                imageFile: null,
-                imageUrl: null,
+                image: {
+                    file: null,
+                    url: null
+                },
+                map: {
+                    file: null,
+                    url: null
+                },
+                availableSizeX: [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90],
+                availableSizeY: [1,2,3,4,5,6,7,8,9],
                 size: [2, 2],
                 decaFlg: false,
                 color: 'rgb(0, 220, 255)',
                 mesh: null
             },
             {
+                openFlg: false,
+                detailOpenFlg: false,
                 title: '手前',
                 checks: [
-                    { label: '影　', flg: false, img: "images/shadow.png" },
                     { label: '曲げ', flg: false, img: "images/warp.png" },
-                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" }
+                    { label: '影　', flg: false, img: "images/shadow.png" },
+                    { label: 'ぽよ', flg: false, img: "images/poyo.gif" },
+                    { label: 'キラ', flg: false, img: "images/kira.gif" }
                 ],
-                imageFile: null,
-                imageUrl: null,
+                image: {
+                    file: null,
+                    url: null
+                },
+                map: {
+                    file: null,
+                    url: null
+                },
+                availableSizeX: [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90],
+                availableSizeY: [1,2,3,4,5,6,7,8,9],
                 size: [2, 2],
                 decaFlg: false,
                 color: 'rgb(100, 255, 0)',
                 mesh: null
             },
             {
+                openFlg: true,
+                detailOpenFlg: false,
                 title: '全天球',
                 checks: [
-                    { label: '回転', flg: false, img: "images/rotate_vr.gif" },
                     { label: '魚眼', flg: false, img: "images/lens.png" },
-                    { label: '青み', flg: false, img: "images/blue.png" }
+                    { label: '回転', flg: false, img: "images/rotate_vr.gif" },
+                    { label: '青み', flg: false, img: "images/blue.png" },
+                    { label: null, flg: false, img: null }
                 ],
-                imageFile: null,
-                imageUrl: null,
+                image: {
+                    file: null,
+                    url: null
+                },
+                map: {
+                    file: null,
+                    url: null
+                },
                 size: [9, 9],
                 decaFlg: false,
                 color: 'rgb(150, 170, 190)',
@@ -82,11 +135,17 @@ new Vue({
         pRenderer: null,
         pScene: null,
         pCamera: null,
+        pGeoPlane: new THREE.PlaneGeometry(1, 1),
+        pGeoPlaneFine: new THREE.PlaneGeometry(1, 1, 64, 64),
+        pGeoSphere: new THREE.SphereGeometry(0.5, 32, 16),
+        pGeoSphereFine: new THREE.SphereGeometry(0.5, 128, 64),
         pMarkerAr0: null,
         pMultiGroup: null,
+        zoomRange: 1,
         tweetUrl: null,
         optionType: 'normal', // ['vr'|'multi']
-        vrPos: [0, 0, -4]
+        vrPos: [0, 0, -4],
+        markerAr0TurnFlg: false
     },
     created: function () {
         var self = this;
@@ -104,19 +163,31 @@ new Vue({
         arg.warpList = arg.fw && (pad + parseInt(arg.fw, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.shodowList = arg.fs && (pad + parseInt(arg.fs, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.poyoList = arg.fp && (pad + parseInt(arg.fp, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
+        arg.kiraList = arg.fk && (pad + parseInt(arg.fk, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.decaList = arg.fd && (pad + parseInt(arg.fd, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.sizeList = arg.wh && (pad + pad + parseInt(arg.wh, 16).toString(10)).slice(-2 * self.arData.length).match(/.{2}/g).reverse();
 
         self.arData.forEach(function (el, idx) {
-            self.arData[idx].imageUrl = arg['i' + idx];
-            self.arData[idx].checks[0].flg = arg.shodowList && !!Number(arg.shodowList[idx]);
-            self.arData[idx].checks[1].flg = arg.warpList && !!Number(arg.warpList[idx]);
+            self.arData[idx].image.url = arg['i' + idx];
+            self.arData[idx].map.url = arg['m' + idx];
+            self.arData[idx].checks[0].flg = arg.warpList && !!Number(arg.warpList[idx]);
+            self.arData[idx].checks[1].flg = arg.shodowList && !!Number(arg.shodowList[idx]);
             self.arData[idx].checks[2].flg = arg.poyoList && !!Number(arg.poyoList[idx]);
+            self.arData[idx].checks[3].flg = arg.kiraList && !!Number(arg.kiraList[idx]);
             self.arData[idx].decaFlg = arg.decaList && !!Number(arg.decaList[idx]);
             self.arData[idx].size = [Number(arg.sizeList[idx][0]), Number(arg.sizeList[idx][1])];
+            if (self.arData[idx].decaFlg) {
+                self.arData[idx].size[0] *= 10;
+            }
+            if (arg['i' + idx]) {
+                self.arData[idx].openFlg = true;
+            }
+            if (arg['m' + idx]) {
+                self.arData[idx].detailOpenFlg = true;
+            }
         });
 
-        if (self.arData[4].imageUrl) {
+        if (self.arData[4].image.url) {
             self.optionType = 'vr';
         } else if (arg.multi) {
             self.optionType = 'multi';
@@ -164,22 +235,30 @@ new Vue({
         self.pScene.add(light);
 
         self.drawMarker(0);
-        var geometry = new THREE.PlaneGeometry(1.24, 1.24);
         var arTexture = new THREE.CanvasTexture(self.qrCanvas[0]);
-        var material = new THREE.MeshLambertMaterial({map: arTexture});
-        self.pMarkerAr0 = new THREE.Mesh(geometry, material);
+        var material = new THREE.MeshBasicMaterial({map: arTexture});
+        self.pMarkerAr0 = new THREE.Mesh(self.pGeoPlane, material);
+        self.pMarkerAr0.scale.set(1.24,1.24,1);
         self.pMarkerAr0.rotation.set(-Math.PI/2, 0, 0);
         self.pMarkerAr0.position.set(0, -0.01, 0);
         self.pScene.add(self.pMarkerAr0);
 
         self.arData.forEach(function (el, idx) {
-            var geometry = new THREE.PlaneGeometry(1, 1);
-            var material = new THREE.MeshLambertMaterial({
+            var material = new THREE.MeshPhongMaterial({
                 color: el.color,
                 transparent: true,
-                depthTest: false
+                depthTest: false,
+                side: THREE.DoubleSide
             });
-            el.mesh = new THREE.Mesh(geometry, material);
+            material.displacementBias = -0.5;
+            if (idx === 4) {
+                el.mesh = new THREE.Mesh(self.pGeoSphere, material);
+                el.mesh.material.side = THREE.BackSide;
+                el.mesh.scale.set(500, 500, 500);
+                el.mesh.rotation.set(0, -Math.PI/2, 0);
+            } else {
+                el.mesh = new THREE.Mesh(self.pGeoPlane, material);
+            }
             self.pScene.add(el.mesh);
         });
         self.pUpdate();
@@ -194,21 +273,39 @@ new Vue({
             var self = this;
             history.replaceState('', '', self.queryString);
             self.pUpdate();
+        },
+        zoomRange: function () {
+            var self = this;
+            self.pCamera.zoom = self.zoomRange;
+            self.pCamera.updateProjectionMatrix();
+            self.pRenderer.render(self.pScene, self.pCamera);
         }
     },
     computed: {
+        allOpenFlg: function () {
+            var self = this;
+            return self.arData.every(function (el) {
+                return el.openFlg;
+            });
+        },
         isSubmitDisabled: function () {
             var self = this;
             return self.creatingFlg || self.arData.every(function (el) {
-                return !el.imageUrl;
+                return !el.image.url;
             }) || self.arData.some(function (el) {
-                return el.imageUrl && !el.imageUrl.match(/^http/);
+                return (el.image.url && !el.image.url.match(/^http/)) || (el.map.url && !el.map.url.match(/^http/));
             });
         },
         queryString: function () {
             var self = this;
             var str = '?wh=' + self.convert10_16(self.arData.map(function (el) {
-                return el.size.join('');
+                if (el.size[0] > 9) {
+                    el.decaFlg = true;
+                    return el.size[0]/10 + '' + el.size[1];
+                } else {
+                    el.decaFlg = false;
+                    return el.size.join('');
+                }
             }).reverse().join(''));
             self.flgName.forEach(function (val, idx) {
                 var num = self.convert2_16(self.arData.map(function (el) {
@@ -227,8 +324,11 @@ new Vue({
             }
 
             self.arData.forEach(function (el, idx) {
-                if (el.imageUrl && (idx !== 4 || self.optionType === 'vr')) {
-                    str += '&i' + idx + '=' + el.imageUrl;
+                if (el.image.url && (idx !== 4 || self.optionType === 'vr')) {
+                    str += '&i' + idx + '=' + el.image.url;
+                    if (el.map.url) {
+                        str += '&m' + idx + '=' + el.map.url;
+                    }
                 }
             });
 
@@ -250,7 +350,13 @@ new Vue({
         scroll: function (el) {
             scrollTo(0, window.pageYOffset + el.getBoundingClientRect().top);
         },
-        selectImage: function (i,e) {
+        switchAllOpen: function (flg) {
+            var self = this;
+            self.arData.forEach(function (el) {
+                el.openFlg = flg;
+            });
+        },
+        selectImage: function (i,e,target) {
             var self = this;
 
             if (!e.target.files.length) {
@@ -264,22 +370,57 @@ new Vue({
                     alert('ファイルサイズが10MBを超えています。\nファイルサイズを抑えるか、他のサービスで事前にアップロードしておいたものを使用してください。')
                     return false;
                 }
-                self.arData[i].imageFile = fr.result;
+                self.arData[i][target].file = fr.result;
 
                 var loader = new THREE.TextureLoader();
-                loader.load(fr.result, function (texture) {
-                    texture.minFilter = THREE.LinearFilter;
-                    var material = new THREE.MeshLambertMaterial({map: texture, transparent: true, depthTest: false});
-                    self.arData[i].mesh.material = material;
-                    self.pUpdate();
-                });
+
+                if (target === 'image') {
+                    loader.load(fr.result, function (texture) {
+                        texture.minFilter = THREE.LinearFilter;
+                        self.arData[i].mesh.material.map = texture;
+                        var rate = texture.image.width/texture.image.height;
+                        if (rate < 1/9) {// .111111111
+                            self.arData[i].size = [1,9];
+                        } else if (rate < 1.2/3) {// .4
+                            self.arData[i].size = [1,Math.round(1/rate)];
+                        } else if (rate < 1.2/2) {// .6
+                            self.arData[i].size = [2,4];
+                        } else if (rate < 3.5/4) {// .875
+                            self.arData[i].size = [3,4];
+                        } else if (rate < 4/3.5) {// 1.142857143
+                            self.arData[i].size = [2,2];
+                        } else if (rate < 2/1.2) {// 1.666666667
+                            self.arData[i].size = [4,3];
+                        } else if (rate < 3/1.2) {// 2.5
+                            self.arData[i].size = [4,2];
+                        } else if (rate < 9){
+                            self.arData[i].size = [Math.round(rate),1];
+                        } else {
+                            self.arData[i].size = [9,1];
+                        }
+                        self.arData[i].mesh.material.needsUpdate = true;
+                        self.pUpdate();
+                    });
+                } else if (target === 'map') {
+                    if (i===0 && self.arData[i].checks[0].flg) {
+                        self.arData[i].mesh.geometry = self.pGeoSphereFine;
+                    } else if (i !== 4) {
+                        self.arData[i].mesh.geometry = self.pGeoPlaneFine;
+                    }
+                    loader.load(fr.result, function (texture) {
+                        texture.minFilter = THREE.LinearFilter;
+                        self.arData[i].mesh.material.displacementMap = texture;
+                        self.arData[i].mesh.material.needsUpdate = true;
+                        self.pUpdate();
+                    });
+                }
             }
             fr.readAsDataURL(file);
         },
-        uploadImage: function (i) {
+        uploadImage: function (i,target) {
             var self = this;
 
-            self.arData[i].imageUrl = "アップロード中…";
+            self.arData[i][target].url = "アップロード中…";
 
             var req = new XMLHttpRequest();
             req.open('POST', "https://api.imgur.com/3/image", true);
@@ -288,36 +429,37 @@ new Vue({
             req.onload = function (event) {
                 if (req.readyState === 4) {
                     if (req.status === 200) {
-                        self.arData[i].imageUrl = eval('(' + req.responseText + ')').data.link;
-                        self.arData[i].imageFile = null;
+                        self.arData[i][target].url = eval('(' + req.responseText + ')').data.link;
+                        self.arData[i][target].file = null;
                     } else {
-                        self.arData[i].imageUrl = null;
+                        self.arData[i][target].url = '';
                         alert('アップロードに失敗しました。\nError: ' + req.status);
                     }
                 }
             };
             req.onerror = function (event) {
-                self.arData[i].imageUrl = null;
+                self.arData[i][target].url = '';
                 alert('アップロード中にエラーが発生しました。');
             };
-            req.send('image=' + encodeURIComponent(self.arData[i].imageFile.split(',')[1]));
+            req.send('image=' + encodeURIComponent(self.arData[i][target].file.split(',')[1]));
         },
-        cancelImage: function (i) {
+        cancelImage: function (i,target) {
             var self = this;
-            self.arData[i].imageFile = null;
+            self.arData[i][target].file = null;
 
-            var material = new THREE.MeshLambertMaterial({
-                color: self.arData[i].color,
-                transparent: true,
-                depthTest: false
-            });
-            self.arData[i].mesh.material = material;
+            if (target === 'image') {
+                self.arData[i].mesh.material.map = null;
+                self.arData[i].mesh.material.needsUpdate = true;
+            } else if (target === 'map') {
+                self.arData[i].mesh.material.displacementMap = null;
+                self.arData[i].mesh.material.needsUpdate = true;
+            }
             self.pUpdate();
         },
         createAr: function () {
             var self = this;
 
-            if (self.optionType === 'vr' && !self.arData[4].imageUrl && window.confirm('VRモードがオンになっていますが、全天球画像が設定されていません。\nVRモードをオフにしてARを作りますか？')) {
+            if (self.optionType === 'vr' && !self.arData[4].image.url && window.confirm('VRモードがオンになっていますが、全天球画像が設定されていません。\nVRモードをオフにしてARを作りますか？')) {
                 self.optionType = 'normal';
             }
 
@@ -418,28 +560,22 @@ new Vue({
             var self = this;
 
             self.arData.forEach(function (el, idx) {
-                el.mesh.material.opacity = el.imageUrl ? 0.5 : 0.1;
+                var elH = el.decaFlg ? el.size[1]*10 : el.size[1];
+                el.mesh.material.opacity = el.image.url ? 0.5 : 0.1;
                 if (idx === 0) {
-                    if (el.checks[1].flg) {
-                        var geometry = new THREE.SphereGeometry(0.5, 32, 32);
-                        el.mesh.geometry = geometry;
+                    if (el.checks[0].flg) {
+                        el.mesh.geometry = el.mesh.material.displacementMap ? self.pGeoSphereFine : self.pGeoSphere;
                         el.mesh.rotation.set(0, -Math.PI/2, 0);
                         el.mesh.position.set(0, el.size[0]/2, 0);
                         el.mesh.scale.set(el.size[0], el.size[0], el.size[0]);
                     } else {
-                        var geometry = new THREE.PlaneGeometry(1, 1);
-                        el.mesh.geometry = geometry;
-                        el.mesh.position.set(0, 0, 0);
-                        el.mesh.rotation.set(-Math.PI/2, 0, 0);
-                        el.mesh.scale.set(el.size[0], el.size[1], 1);
+                        self.arData[0].mesh.geometry = self.arData[0].mesh.material.displacementMap ? self.pGeoPlaneFine : self.pGeoPlane;
+                        self.arData[0].mesh.position.set(0, 0, 0);
+                        self.arData[0].mesh.rotation.set(-Math.PI/2, 0, 0);
+                        self.arData[0].mesh.scale.set(el.size[0], elH, 1);
+                        el.mesh.scale.set(el.size[0], elH, 1);
                     }
-                } else if (idx === 4) {
-                    var geometry = new THREE.SphereGeometry(20, 32, 32);
-                    el.mesh.geometry = geometry;
-                    el.mesh.material.side = THREE.BackSide;
-                    el.mesh.rotation.set(0, -Math.PI/2, 0);
-                    el.mesh.position.set(0, 0, 0);
-                } else {
+                } else if (idx !== 4) {
                     if (self.optionType === 'multi') {
                         var pos = [
                             {x: 0, z: 0},
@@ -448,15 +584,16 @@ new Vue({
                             {x: -2, z: -2}
                         ];
                     } else {
+                        var ar0H = self.arData[0].decaFlg ? self.arData[0].size[1]*10 : self.arData[0].size[1];
                         var pos = [
                             {x: 0, z: 0},
-                            {x: 0, z: -self.arData[0].size[1]/2},
+                            {x: 0, z: -ar0H/2},
                             {x: 0, z: 0},
-                            {x: 0, z: self.arData[0].size[1]/2}
+                            {x: 0, z: ar0H/2}
                         ];
                     }
-                    el.mesh.position.set(pos[idx].x, el.size[1]/2, pos[idx].z);
-                    el.mesh.scale.set(el.size[0], el.size[1], 1);
+                    el.mesh.position.set(pos[idx].x, elH/2, pos[idx].z);
+                    el.mesh.scale.set(el.size[0], elH, 1);
                 }
             });
             self.pRenderer.render(self.pScene, self.pCamera);
@@ -468,10 +605,10 @@ new Vue({
                 self.pMultiGroup = new THREE.Group();
                 for (var i = 1; i < 4; i++) {
                     self.drawMarker(i);
-                    var geometry = new THREE.PlaneGeometry(1.24, 1.24);
                     var arTexture = new THREE.CanvasTexture(self.qrCanvas[i]);
-                    var material = new THREE.MeshLambertMaterial({map: arTexture});
-                    var mesh = new THREE.Mesh(geometry, material);
+                    var material = new THREE.MeshBasicMaterial({map: arTexture});
+                    var mesh = new THREE.Mesh(self.pGeoPlane, material);
+                    mesh.scale.set(1.24, 1.24, 1);
                     mesh.rotation.set(-Math.PI/2, 0, 0);
                     mesh.position.set([0, 2, 0, -2][i], -0.01, [0, -2, -2, -2][i]);
                     self.pMultiGroup.add(mesh);
