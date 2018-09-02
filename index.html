@@ -2,6 +2,14 @@
 <html>
 
 <head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-125035137-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-125035137-1');
+    </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="画像を入れるだけで、アプリ不要のブラウザARを無料で作ることができるジェネレータです。">
@@ -14,18 +22,24 @@
     <title>WebARジェネレータ</title>
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/pure-min.css">
     <link rel="stylesheet" href="https://unpkg.com/purecss@1.0.0/build/grids-responsive-min.css">
-    <link rel="stylesheet" href="https://yoridrill.github.io/web-ar-generator/css/screen.css?=1">
+    <link rel="stylesheet" href="https://yoridrill.github.io/web-ar-generator/css/screen.css?=2">
     <script src="https://cdn.jsdelivr.net/npm/vue@2.5.13"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.min.js"></script>
     <link rel="shortcut icon" href="favicon.ico">
 </head>
 
 <body>
-    <div id="app" class="pure-g">
+    <div class="pure-g">
         <div class="pure-u-lg-1-12"></div>
 
         <div class="pure-u-1 pure-u-lg-5-6">
-            <div class="main">
+            <div style="background-color: #fff">
+                <script type="text/javascript">
+                    var nend_params = {"media":56946,"site":306601,"spot":905382,"type":1,"oriented":1};
+                </script>
+                <script type="text/javascript" src="https://js1.nend.net/js/nendAdLoader.js"></script>
+            </div>
+            <div id="app" class="main">
                 <section class="pure-g border_b flexAlign_c">
                     <div class="pure-u-1 pure-u-sm-2-3 pure-u-lg-2-5 pad_t">
                         <a href="https://web-ar-generator.firebaseapp.com">
@@ -52,7 +66,7 @@
                 </section>
 
                 <section>
-                    <p class="pad_a font_s">
+                    <p class="pad_t par_l font_s">
                         自作のGIFアニメや透過PNGなどを、<b>AR（拡張現実）表示</b>させるジェネレータで、簡易的なVRも作成できます。<br>
                         「<b>ファイル選択</b>」から画像をアップロードして「<b>作成！</b>」ボタンを押すだけで作成できます！
                     </p>
@@ -116,17 +130,14 @@
                                 <template v-for="arIdx in [4,3,2,1,0]">
                                     <template v-if="(arIdx !== 4 || optionType === 'vr')">
 
-                                        <div class="pad_t" style="border-top: 2px solid #ddd"></div>
-                                        <div class="pure-g pad_l pad_b flexAlign_c">
-
+                                        <div class="pure-g acco_title flexAlign_c" :style="{backgroundColor: arData[arIdx].rgba}">
                                             <div class="pure-u-1-12" @click="arData[arIdx].openFlg = !arData[arIdx].openFlg">
-                                                <span v-if="arData[arIdx].openFlg" style="color: #0378e7">▼</span>
-                                                <span v-else style="color: #ccc">▲</span>
+                                                <div class="arrow txt_c" :class="{'open': arData[arIdx].openFlg}" :style="{color: arData[arIdx].rgba}">▲</div>
                                             </div>
                                             <div class="pure-u-3-24" @click="arData[arIdx].openFlg = !arData[arIdx].openFlg">
                                                 <div class="square" :class="{'floor': arIdx===0}" :style="{backgroundColor: arData[arIdx].color}"></div>
                                             </div>
-                                            <div class="pure-u-1-3" @click="arData[arIdx].openFlg = !arData[arIdx].openFlg">
+                                            <div class="pure-u-1-3 label" :style="{color: arData[arIdx].color}" @click="arData[arIdx].openFlg = !arData[arIdx].openFlg">
                                                 <template v-if="optionType !== 'multi'">
                                                     {{arData[arIdx].title}}
                                                 </template>
@@ -150,9 +161,9 @@
                                         </div>
 
                                         <transition name="accordion">
-                                            <div v-show="arData[arIdx].openFlg" class="pad_l">
-                                                <div class="pad_l pad_b">
-                                                    <div class="pure-g">
+                                            <div v-show="arData[arIdx].openFlg" class="pad_l pad_t">
+                                                <div class="pad_b">
+                                                    <div class="pure-g pad_t pad_b">
                                                         <div class="pure-u-1-2 txt_c">
                                                             <div v-if="!arData[arIdx].image.file" class="pure-button formImageSelect" :class="{'pure-button-primary': !arData[arIdx].image.url}">
                                                                 <input @change="selectImage(arIdx,$event,'image')" type="file" accept="image/*">
@@ -168,45 +179,137 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="pure-g pad_t pad_b pad_l flexAlign_c">
-                                                        <template v-for="check in arData[arIdx].checks">
-                                                            <div v-if="check.label" :class="'pure-u-1-' + arData[arIdx].checks.length">
-                                                                <label class="pure-checkbox">
-                                                                    <input v-model="check.flg" type="checkbox"> {{check.label}} <img :src="check.img" class="va_m" width="36">
-                                                                </label>
+                                                    <div class="tab_option mar_t">
+                                                        <div class="pure-g" v-if="arIdx !== 4">
+                                                            <div class="title pure-u-1-3" :class="{'selected': arData[arIdx].tabOptionType === 'effect'}" @click="arData[arIdx].tabOptionType = 'effect'">
+                                                                効果
                                                             </div>
-                                                        </template>
+                                                            <div class="title pure-u-1-3" :class="{'selected': arData[arIdx].tabOptionType === 'touch'}" @click="arData[arIdx].tabOptionType = 'touch'">
+                                                                タッチ
+                                                            </div>
+                                                            <div v-if="arIdx !== 4" class="title pure-u-1-3" :class="{'selected': arData[arIdx].tabOptionType === 'map'}" @click="arData[arIdx].tabOptionType = 'map'">
+                                                                でこぼこ
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="content pad_t pad_b">
+                                                            <div v-show="arData[arIdx].tabOptionType === 'effect'" class="pure-g flexAlign_c txt_c">
+                                                                <template v-for="check in arData[arIdx].checks">
+                                                                    <div v-if="check.label" :class="'pure-u-1-' + arData[arIdx].checks.length">
+                                                                        <div class="checkbox_toggle">
+                                                                            <label>
+                                                                                <input v-model="check.flg" type="checkbox"><span class="tap"><img :src="check.img" class="va_m" width="36"> <div class="label">{{check.label}}</div></span>
+                                                                            </label>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </template>
+                                                            </div>
+
+                                                            <template v-if="arIdx !== 4">
+                                                                <div v-show="arData[arIdx].tabOptionType === 'touch'">
+                                                                    <div class="pure-g flexAlign_c txt_c">
+                                                                        <template v-for="check in arData[arIdx].touchChecks">
+                                                                            <div v-if="check.label" :class="'pure-u-1-' + arData[arIdx].touchChecks.length">
+                                                                                <div class="checkbox_toggle">
+                                                                                    <label>
+                                                                                        <input v-model="check.flg" type="checkbox"><span class="tap"><img :src="check.img" class="va_m" width="36"> <div class="label">{{check.label}}</div></span>
+                                                                                    </label>
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </template>
+                                                                    </div>
+                                                                    <div class="pure-g mar_t">
+                                                                        <div class="pure-u-1-1 font_s pad_b"><button @click="scroll($refs.touchImg)" class="pure-button font_xs detail mar_r" style="border-radius: 40%">？</button>タッチ切り替え画像</div>
+                                                                        <div class="pure-u-1-2 txt_c">
+                                                                            <div v-if="!arData[arIdx].touch.file" class="pure-button formImageSelect">
+                                                                                <input @change="selectImage(arIdx,$event,'touch')" type="file" accept="image/*">
+                                                                                ファイル選択
+                                                                            </div>
+                                                                            <div v-else>
+                                                                                <button @click="uploadImage(arIdx,'touch')" class="pure-button pure-button-primary">確定</button>
+                                                                                <button @click="cancelImage(arIdx,'touch')" class="pure-button">取消</button>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="pure-u-1-2">
+                                                                            <input v-model="arData[arIdx].touch.url" class="pure-u-23-24" placeholder="画像URL">
+                                                                        </div>
+                                                                    </div>
+                                                                    <div v-if="(arData[arIdx].touch.url||'').match(/\.mp4$/i)">
+                                                                        <div class="pure-g flexAlign_c pad_t" style="line-height: 40px">
+                                                                            <div class="pure-u-1-4" :style="{backgroundColor: 'rgb(' + arData[arIdx].chromakey.join(' ') + ')'}">
+                                                                                クロマキー
+                                                                            </div>
+                                                                            <div class="pure-u-1-4">
+                                                                                R:
+                                                                                <input v-model.number="arData[arIdx].chromakey[0]" class="pure-u-3-5">
+                                                                            </div>
+                                                                            <div class="pure-u-1-4">
+                                                                                G:
+                                                                                <input v-model.number="arData[arIdx].chromakey[1]" class="pure-u-3-5">
+                                                                            </div>
+                                                                            <div class="pure-u-1-4">
+                                                                                B:
+                                                                                <input v-model.number="arData[arIdx].chromakey[2]" class="pure-u-3-5">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+
+                                                                <div v-show="arData[arIdx].tabOptionType === 'map'" class="pure-g">
+                                                                    <div class="pure-u-1-1 font_s pad_b"><button @click="scroll($refs.map)" class="pure-button font_xs detail mar_r" style="border-radius: 40%">？</button>でこぼこ画像（DisplacementMap）</div>
+                                                                    <div class="pure-u-1-2 txt_c">
+                                                                        <div v-if="!arData[arIdx].map.file" class="pure-button formImageSelect">
+                                                                            <input @change="selectImage(arIdx,$event,'map')" type="file" accept="image/*">
+                                                                            ファイル選択
+                                                                        </div>
+                                                                        <div v-else>
+                                                                            <button @click="uploadImage(arIdx,'map')" class="pure-button pure-button-primary">確定</button>
+                                                                            <button @click="cancelImage(arIdx,'map')" class="pure-button">取消</button>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="pure-u-1-2">
+                                                                        <input v-model="arData[arIdx].map.url" class="pure-u-23-24" placeholder="画像URL">
+                                                                    </div>
+                                                                </div>
+                                                            </template>
+                                                        </div>
                                                     </div>
-
-                                                    <template v-if="arIdx !== 4">
-
-                                                        <div class="txt_r">
-                                                            <button v-show="!arData[arIdx].detailOpenFlg" @click="arData[arIdx].detailOpenFlg = true" class="pure-button font_xs">▲ 詳細オプション</button>
-                                                            <button v-show="arData[arIdx].detailOpenFlg" @click="arData[arIdx].detailOpenFlg = false" class="pure-button pure-button-active detail font_xs">▼ 詳細オプション</button>
-                                                        </div>
-
-                                                        <div v-show="arData[arIdx].detailOpenFlg" class="pure-g pad_t detailArea">
-                                                            <div class="pure-u-1-1 font_s pad_b"><button @click="scroll($refs.map)" class="pure-button font_xs detail mar_r" style="border-radius: 40%">？</button>でこぼこ画像（DisplacementMap）</div>
-                                                            <div class="pure-u-1-2 txt_c">
-                                                                <div v-if="!arData[arIdx].map.file" class="pure-button formImageSelect">
-                                                                    <input @change="selectImage(arIdx,$event,'map')" type="file" accept="image/*">
-                                                                    ファイル選択
-                                                                </div>
-                                                                <div v-else>
-                                                                    <button @click="uploadImage(arIdx,'map')" class="pure-button pure-button-primary">確定</button>
-                                                                    <button @click="cancelImage(arIdx,'map')" class="pure-button">取消</button>
-                                                                </div>
-                                                            </div>
-                                                            <div class="pure-u-1-2">
-                                                                <input v-model="arData[arIdx].map.url" class="pure-u-23-24" placeholder="画像URL">
-                                                            </div>
-                                                        </div>
-                                                    </template>
                                                 </div>
                                             </div>
                                         </transition>
                                     </template>
                                 </template>
+
+                                <div v-show="optionType === 'normal'" class="pad_t pad_l pad_b">
+                                    <div class="acco_title pure-g font_s" style="color: #888" @click="detailOpenFlg = !detailOpenFlg">
+                                        <div class="arrow pure-u-1-6 txt_c" :class="{'open': detailOpenFlg}">▲</div>
+                                        <div class="pure-u-5-6">
+                                            オフセット
+                                        </div>
+                                    </div>
+                                    <div v-show="detailOpenFlg" class="pad_t">
+                                        <div class="pure-g flexAlign_c" style="line-height: 40px">
+                                            <div class="pure-u-1-4">
+                                                オフセット
+                                            </div>
+                                            <div class="pure-u-1-4">
+                                                x:
+                                                <input v-model.number="offset[0]" class="pure-u-3-5">
+                                            </div>
+                                            <div class="pure-u-1-4">
+                                                y:
+                                                <input v-model.number="offset[1]" class="pure-u-3-5">
+                                            </div>
+                                            <div class="pure-u-1-4">
+                                                z:
+                                                <input v-model.number="offset[2]" class="pure-u-3-5">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <div class="txt_c mar_t">
                                     <button @click="previewViwer" :class="{'pure-button-disabled': isSubmitDisabled}" class="pure-button pure-input-1-3">プレビュー</button>
@@ -283,6 +386,15 @@
                     </div>
                 </section>
 
+                <section class="txt_c pad_t">
+                    <div v-if="728 < screenWidth">
+                        <span class="admax-banner" data-admax-id="2e8394846af41dc49c586711c62a7441" data-width="728" data-height="90"></span>
+                    </div>
+                    <div v-if="300 < screenWidth && screenWidth <= 728">
+                        <span class="admax-banner" data-admax-id="984234f0f1bc79ee8d4fa05746bc966d" data-width="300" data-height="250"></span>
+                    </div>
+                </section>
+
                 <section ref="howto" class="pad_a">
                     <h2 class="border_b">使い方</h2>
 
@@ -294,7 +406,8 @@
                                 全てを設定する必要はなく、<b>画像を最低1つどこかに設定</b>すれば表示可能です。
                             </p>
                             <p class="pad_a">
-                                このジェネレータで設定したものは、現在開いているページのURLに即時反映されるため、そのときのURLを控えることで一時保存ができます。
+                                設定したものは、現在開いているジェネレータのURLに即時反映されるため、そのときのURLを控えることで一時保存ができます。<br>
+                                （※クロマキーの値のみ割り算による切り捨てが発生しているため、同じにならないことがあります。）
                             </p>
                             <p class="pad_a">
                                 <b>ページ内のプレビューエリア</b>は、一部のオプションは反映されない<b>簡易確認用</b>となっています。<br>
@@ -319,15 +432,38 @@
                             </p>
                             <h3>画像</h3>
                             <p class="pad_a">
-                                アニメーションGIF、アルファ付きPNG、JPGを使用することができます。<br>
+                                アニメーションGIF、アルファ付きPNG、JPG、「タッチ切り替え画像」のみ音声付きMP4も使用することができます。<br>
                                 <b>縦横の大きさは整数比、容量は1MB前後</b>が推奨です。<br>
-                                フレームが最適化されたGIFアニメーションは、現状ジェネレータの対応が不完全なので、非推奨です。
+                                高フレームレートかつフレーム最適化がされているGIFは、カクつきや乱れが生じる可能性があるため非推奨です。
                             </p>
                             <p class="pad_a">
                                 Live2DやSpine、After Effectsで制作したアニメーションを使う場合は、<b>MOV形式</b>（12fps推奨）で書き出したものを、<b>Photoshop</b>で取り込み<b>「Web用に保存」からGIF</b>を選び、<b>「透明部分」にチェック</b>を入れて書き出すのがおすすめです。<br>
                                 縁がジャギジャギして汚い場合は「透明ディザ」や「マット」を調整すると改善します。
                             </p>
-
+                            <h4>複数マーカーモード</h4>
+                            <p class="pad_l">
+                                複数のマーカーそれぞれに画像を映すARを作成できます。<br>
+                                それぞれのマーカーに載っているQRコードは同じなので、どれかにアクセスすれば4つともで表示できます。<br>
+                                <b>同じタイミングで設定した画像のみが同時表示</b>できます。<br>
+                                前に作成したマーカーと次に作成したマーカーで同時表示することはできません。<br>
+                                端末負荷が高いので、スペック次第ではブラウザが落ちる可能性があります。
+                            </p>
+                            <h4>VRモード</h4>
+                            <p class="pad_l">
+                                カメラは使用せず、全天球画像を背景として表示するVRを作成できます。<br>
+                                カメラを使わないため、画像はマーカーの場所ではなく空間のある一点に固定され、ジャイロセンサーによって場所を認識します。<br>
+                                「全体位置」の設定項目が増え、この項目で空間のどの一点に固定するか設定できます。<br>
+                                自分がいるところが（0, 1.6, 0）で、デフォルトの全体位置は（0, 0, -4）となっています。<br>
+                                ARKitを使わないので、対応端末外のiPhoneでも見られる場合があります。
+                            </p>
+                            <div class="txt_c">
+                                <div v-if="728 < screenWidth">
+                                    <span class="admax-banner" data-admax-id="be742aedf8f5dfb854b32db2482c38ce" data-width="300" data-height="250"></span>
+                                </div>
+                                <div v-if="300 < screenWidth && screenWidth <= 728">
+                                    <span class="admax-banner" data-admax-id="f06ac0440ce545e9b0e5a462b00ffaf1" data-width="300" data-height="250"></span>
+                                </div>
+                            </div>
                         </div>
                         <div class="pure-u-1 pure-u-md-1-2">
                             <h3>設定項目</h3>
@@ -352,7 +488,7 @@
                                 「手前」と「奥」の間の距離は「床」の高さ、「床」を球にしたときの直径は「床」の幅となっています。<br>
                                 「床」の高さは0も設定でき、その場合「手前」と「真ん中」と「奥」が重なります。
                             </p>
-                            <h4>オプション</h4>
+                            <h4>効果</h4>
                             <ul class="list_y">
                                 <li>
                                     <b>曲げ</b><br>
@@ -371,7 +507,7 @@
                                 </li>
                                 <li>
                                     <b>キラ</b><br>
-                                    金属のような光沢が出ます。<br>
+                                    動かすと金属のような光沢が出ます。<br>
                                     ジャイロARやVRでは対象を動かせないので、あまり光りません。
                                 </li>
                                 <li>
@@ -394,7 +530,33 @@
                                     撮って出しの全天球画像は色合いが地味なので、設定することをおすすめします。
                                 </li>
                             </ul>
-                            <h4>詳細オプション</h4>
+                            <h4>タッチ</h4>
+                            <p class="pad_l">
+                                画面をタッチしたときのアクションを設定できます。<br>
+                                複数画像・複数アクションを設定した場合は同時に発動します。<br>
+                                この項目を設定した場合、ビューアの左下にタッチを促すアイコンが一定時間表示されます。
+                            </p>
+                            <ul class="list_y">
+                                <li>
+                                    <b>くるん</b><br>
+                                    くるんと1回転します。<br>
+                                    「曲げ」効果が有効になっている場合は、曲がり方に沿ってぐるっと大きく一周し、影も離れてしまいますすみません…
+                                </li>
+                                <li>
+                                    <b>ぷにっ</b><br>
+                                    ぷにっとします。長押しすると潰れ続けます。
+                                </li>
+                                <li ref="touchImg">
+                                    <b>タッチ切り替え画像</b><br>
+                                    タッチしたタイミングで画像を切り替えることができます。<br>
+                                    もう一度タッチすると戻ります。<br>
+                                    この項目のみ音声付きMP4も使用することができますが、このページでアップロードに使用しているimgurが、まだ音声付きMP4に対応していないため、使用する場合はDropboxなどにアップロードしてください。<br>
+                                    参考：<a target="_blank" href="http://ijmp320.hatenablog.jp/entry/2015/01/18/171807">【備忘録】Dropboxの画像のURL（直リンク）の取得</a><br>
+                                    MP4を入れた場合、クロマキーを設定することができます。<br>
+                                    デフォルトでは緑が抜かれるようになっています。
+                                </li>
+                            </ul>
+                            <h4>でこぼこ</h4>
                             <ul class="list_y">
                                 <li ref="map">
                                     <b>でこぼこ画像</b><br>
@@ -404,21 +566,10 @@
                                     「奥」の「曲げ」オプションを有効にしたときは、飛び出方が逆になります。
                                 </li>
                             </ul>
-                            <h4>複数マーカーモード</h4>
+                            <h4>オフセット</h4>
                             <p class="pad_l">
-                                複数のマーカーそれぞれに画像を映すARを作成できます。<br>
-                                それぞれのマーカーに載っているQRコードは同じなので、どれかにアクセスすれば4つともで表示できます。<br>
-                                <b>同じタイミングで設定した画像のみが同時表示</b>できます。<br>
-                                前に作成したマーカーと次に作成したマーカーで同時表示することはできません。<br>
-                                端末負荷が高いので、スペック次第ではブラウザが落ちる可能性があります。
-                            </p>
-                            <h4>VRモード</h4>
-                            <p class="pad_l">
-                                カメラは使用せず、全天球画像を背景として表示するVRを作成できます。<br>
-                                カメラを使わないため、画像はマーカーの場所ではなく空間のある一点に固定され、ジャイロセンサーによって場所を認識します。<br>
-                                「全体位置」の設定項目が増え、この項目で空間のどの一点に固定するか設定できます。<br>
-                                自分がいるところが（0, 1.6, 0）で、デフォルトの全体位置は（0, 0, -4）となっています。<br>
-                                ARKitを使わないので、対応端末外のiPhoneでも見られる場合があります。
+                                表示位置の微調整ができます。<br>
+                                マーカーを椅子の座面に置いてキャラを座らせたいときは、yを少し下げたり、ジャイロで等身大のキャラを表示するときにyを大幅に下げ、zもマイナスの値で遠くに離したりするのがおすすめです。
                             </p>
                         </div>
                     </div>
@@ -482,6 +633,7 @@
         <div class="pure-u-lg-1-12"></div>
     </div>
 </body>
-<script src="https://yoridrill.github.io/web-ar-generator/js/index-min.js?=1"></script>
+<script async src="https://adm.shinobi.jp/st/bn2.js"></script>
+<script src="https://yoridrill.github.io/web-ar-generator/js/index-min.js?=2"></script>
 <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
 </html>

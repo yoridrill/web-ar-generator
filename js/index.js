@@ -2,10 +2,11 @@ new Vue({
     el: '#app',
     data: {
         flgName: ['fw', 'fs', 'fp', 'fk'],
+        touchName: ['ft', 'fg'],
         arData: [
             {
                 openFlg: false,
-                detailOpenFlg: false,
+                tabOptionType: 'effect',
                 title: '床 (または球)',
                 checks: [
                     { label: '球体', flg: false, img: "images/sphere.png" },
@@ -13,6 +14,10 @@ new Vue({
                     { label: 'ぽよ', flg: false, img: "images/poyo.gif" },
                     { label: 'キラ', flg: false, img: "images/kira.gif" }
                 ],
+                touchChecks: [
+                    { label: 'くるん', flg: false, img: "images/turn.gif" },
+                    { label: 'ぷにっ', flg: false, img: "images/guni.gif" }
+                ],
                 image: {
                     file: null,
                     url: null
@@ -21,22 +26,32 @@ new Vue({
                     file: null,
                     url: null
                 },
+                touch: {
+                    file: null,
+                    url: null
+                },
+                chromakey: [25, 229, 51],
                 availableSizeX: [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90],
                 availableSizeY: [0,1,2,3,4,5,6,7,8,9],
                 size: [2, 2],
                 decaFlg: false,
-                color: 'rgb(255, 0, 180)',
+                color: 'rgb(255, 151, 112)',
+                rgba: 'rgba(255, 151, 112, 0.3)',
                 mesh: null
             },
             {
                 openFlg: false,
-                detailOpenFlg: false,
+                tabOptionType: 'effect',
                 title: '奥',
                 checks: [
                     { label: '曲げ', flg: false, img: "images/warp_bg.png" },
-                    { label: '影　', flg: false, img: "images/shadow.png" },
+                    { label: '影', flg: false, img: "images/shadow.png" },
                     { label: 'ぽよ', flg: false, img: "images/poyo.gif" },
                     { label: 'キラ', flg: false, img: "images/kira.gif" }
+                ],
+                touchChecks: [
+                    { label: 'くるん', flg: false, img: "images/turn.gif" },
+                    { label: 'ぷにっ', flg: false, img: "images/guni.gif" }
                 ],
                 image: {
                     file: null,
@@ -46,22 +61,32 @@ new Vue({
                     file: null,
                     url: null
                 },
+                touch: {
+                    file: null,
+                    url: null
+                },
+                chromakey: [25, 229, 51],
                 availableSizeX: [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90],
                 availableSizeY: [1,2,3,4,5,6,7,8,9],
                 size: [2, 2],
                 decaFlg: false,
-                color: 'rgb(0, 0, 255)',
+                color: 'rgb(66, 184, 221)',
+                rgba: 'rgba(66, 184, 221, 0.2)',
                 mesh: null
             },
             {
                 openFlg: true,
-                detailOpenFlg: false,
+                tabOptionType: 'effect',
                 title: '真ん中',
                 checks: [
                     { label: '曲げ', flg: false, img: "images/warp.png" },
-                    { label: '影　', flg: false, img: "images/shadow.png" },
+                    { label: '影', flg: false, img: "images/shadow.png" },
                     { label: 'ぽよ', flg: false, img: "images/poyo.gif" },
                     { label: 'キラ', flg: false, img: "images/kira.gif" }
+                ],
+                touchChecks: [
+                    { label: 'くるん', flg: false, img: "images/turn.gif" },
+                    { label: 'ぷにっ', flg: false, img: "images/guni.gif" }
                 ],
                 image: {
                     file: null,
@@ -71,22 +96,32 @@ new Vue({
                     file: null,
                     url: null
                 },
+                touch: {
+                    file: null,
+                    url: null
+                },
+                chromakey: [25, 229, 51],
                 availableSizeX: [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90],
                 availableSizeY: [1,2,3,4,5,6,7,8,9],
                 size: [2, 2],
                 decaFlg: false,
-                color: 'rgb(0, 220, 255)',
+                color: 'rgb(240, 190, 0)',
+                rgba: 'rgba(253, 231, 76, 0.4)',
                 mesh: null
             },
             {
                 openFlg: false,
-                detailOpenFlg: false,
+                tabOptionType: 'effect',
                 title: '手前',
                 checks: [
                     { label: '曲げ', flg: false, img: "images/warp.png" },
-                    { label: '影　', flg: false, img: "images/shadow.png" },
+                    { label: '影', flg: false, img: "images/shadow.png" },
                     { label: 'ぽよ', flg: false, img: "images/poyo.gif" },
                     { label: 'キラ', flg: false, img: "images/kira.gif" }
+                ],
+                touchChecks: [
+                    { label: 'くるん', flg: false, img: "images/turn.gif" },
+                    { label: 'ぷにっ', flg: false, img: "images/guni.gif" }
                 ],
                 image: {
                     file: null,
@@ -96,21 +131,31 @@ new Vue({
                     file: null,
                     url: null
                 },
+                touch: {
+                    file: null,
+                    url: null
+                },
+                chromakey: [25, 229, 51],
                 availableSizeX: [1,2,3,4,5,6,7,8,9,10,20,30,40,50,60,70,80,90],
                 availableSizeY: [1,2,3,4,5,6,7,8,9],
                 size: [2, 2],
                 decaFlg: false,
-                color: 'rgb(100, 255, 0)',
+                color: 'rgb(255, 112, 166)',
+                rgba: 'rgba(255, 112, 166, 0.2)',
                 mesh: null
             },
             {
                 openFlg: true,
-                detailOpenFlg: false,
+                tabOptionType: 'effect',
                 title: '全天球',
                 checks: [
                     { label: '魚眼', flg: false, img: "images/lens.png" },
                     { label: '回転', flg: false, img: "images/rotate_vr.gif" },
                     { label: '青み', flg: false, img: "images/blue.png" },
+                    { label: null, flg: false, img: null }
+                ],
+                touchChecks: [
+                    { label: null, flg: false, img: null },
                     { label: null, flg: false, img: null }
                 ],
                 image: {
@@ -121,9 +166,15 @@ new Vue({
                     file: null,
                     url: null
                 },
+                touch: {
+                    file: null,
+                    url: null
+                },
+                chromakey: [25, 229, 51],
                 size: [9, 9],
                 decaFlg: false,
-                color: 'rgb(150, 170, 190)',
+                color: 'rgb(160, 165, 170)',
+                rgba: 'rgba(160, 165, 170, 0.2)',
                 mesh: null
             }
         ],
@@ -145,10 +196,15 @@ new Vue({
         tweetUrl: null,
         optionType: 'normal', // ['vr'|'multi']
         vrPos: [0, 0, -4],
-        markerAr0TurnFlg: false
+        offset: [0, 0, 0],
+        markerAr0TurnFlg: false,
+        detailOpenFlg: false,
+        screenWidth: 0
     },
     created: function () {
         var self = this;
+
+        self.screenWidth = window.innerWidth;
 
         if (!location.search) return;
 
@@ -164,16 +220,21 @@ new Vue({
         arg.shodowList = arg.fs && (pad + parseInt(arg.fs, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.poyoList = arg.fp && (pad + parseInt(arg.fp, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.kiraList = arg.fk && (pad + parseInt(arg.fk, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
+        arg.turnList = arg.ft && (pad + parseInt(arg.ft, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
+        arg.guniList = arg.fg && (pad + parseInt(arg.fg, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.decaList = arg.fd && (pad + parseInt(arg.fd, 16).toString(2)).slice(-1 * self.arData.length).split('').reverse();
         arg.sizeList = arg.wh && (pad + pad + parseInt(arg.wh, 16).toString(10)).slice(-2 * self.arData.length).match(/.{2}/g).reverse();
 
         self.arData.forEach(function (el, idx) {
             self.arData[idx].image.url = arg['i' + idx];
             self.arData[idx].map.url = arg['m' + idx];
+            self.arData[idx].touch.url = arg['t' + idx];
             self.arData[idx].checks[0].flg = arg.warpList && !!Number(arg.warpList[idx]);
             self.arData[idx].checks[1].flg = arg.shodowList && !!Number(arg.shodowList[idx]);
             self.arData[idx].checks[2].flg = arg.poyoList && !!Number(arg.poyoList[idx]);
             self.arData[idx].checks[3].flg = arg.kiraList && !!Number(arg.kiraList[idx]);
+            self.arData[idx].touchChecks[0].flg = arg.turnList && !!Number(arg.turnList[idx]);
+            self.arData[idx].touchChecks[1].flg = arg.guniList && !!Number(arg.guniList[idx]);
             self.arData[idx].decaFlg = arg.decaList && !!Number(arg.decaList[idx]);
             self.arData[idx].size = [Number(arg.sizeList[idx][0]), Number(arg.sizeList[idx][1])];
             if (self.arData[idx].decaFlg) {
@@ -182,8 +243,11 @@ new Vue({
             if (arg['i' + idx]) {
                 self.arData[idx].openFlg = true;
             }
-            if (arg['m' + idx]) {
-                self.arData[idx].detailOpenFlg = true;
+            if (arg['kc' + idx]) {
+                var rgb = decodeURIComponent(arg['kc' + idx]).split(' ');
+                self.arData[idx].chromakey = rgb.map(function(el) {
+                    return Math.round(el*255);
+                });
             }
         });
 
@@ -195,6 +259,9 @@ new Vue({
 
         if (arg.vrPos) {
             self.vrPos = decodeURIComponent(arg.vrPos).split(' ');
+        }
+        if (arg.offset) {
+            self.offset = decodeURIComponent(arg.offset).split(' ');
         }
     },
     mounted: function () {
@@ -228,10 +295,10 @@ new Vue({
         self.pCamera.position.set(6, 10, 10);
         self.pCamera.lookAt(new THREE.Vector3(0, 1, 0));
 
-        var directionalLight = new THREE.DirectionalLight(0xffffff);
+        var directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
         directionalLight.position.set(0, 100, 100);
         self.pScene.add(directionalLight);
-        var light = new THREE.AmbientLight(0xffffff, 0.5);
+        var light = new THREE.AmbientLight(0xffffff, 0.8);
         self.pScene.add(light);
 
         self.drawMarker(0);
@@ -293,7 +360,7 @@ new Vue({
             return self.creatingFlg || self.arData.every(function (el) {
                 return !el.image.url;
             }) || self.arData.some(function (el) {
-                return (el.image.url && !el.image.url.match(/^http/)) || (el.map.url && !el.map.url.match(/^http/));
+                return (el.image.url && !el.image.url.match(/^http/)) || (el.map.url && !el.map.url.match(/^http/)) || (el.touch.url && !el.touch.url.match(/^http/));
             });
         },
         queryString: function () {
@@ -315,6 +382,14 @@ new Vue({
                     str += '&' + val + '=' + num;
                 }
             });
+            self.touchName.forEach(function (val, idx) {
+                var num = self.convert2_16(self.arData.map(function (el) {
+                    return el.touchChecks[idx].flg ? 1 : 0;
+                }).reverse().join(''));
+                if(num !== '0') {
+                    str += '&' + val + '=' + num;
+                }
+            });
             //decaFlg
             var numDeca = self.convert2_16(self.arData.map(function (el) {
                 return el.decaFlg ? 1 : 0;
@@ -329,13 +404,19 @@ new Vue({
                     if (el.map.url) {
                         str += '&m' + idx + '=' + el.map.url;
                     }
+                    if (el.touch.url) {
+                        str += '&t' + idx + '=' + el.touch.url;
+                        str += '&kc' + idx + '=' + encodeURIComponent(Math.floor(el.chromakey[0]/2.55)/100 + ' ' + Math.floor(el.chromakey[1]/2.55)/100 + ' ' + Math.floor(el.chromakey[2]/2.55)/100);
+                    }
                 }
             });
 
-            if (self.optionType === 'multi') {
-                str += '&multi=1';
-            } else if (self.optionType === 'vr') {
+            if (self.optionType === 'vr') {
                 str += '&vrPos=' + encodeURIComponent(self.vrPos.join(' '));
+            } else if (self.optionType === 'multi') {
+                str += '&multi=1';
+            } else if (self.offset[0] * self.offset[0] + self.offset[1] * self.offset[1] + self.offset[2] * self.offset[2]) {
+                str += '&offset=' + encodeURIComponent(self.offset.join(' '));
             }
 
             return str;
