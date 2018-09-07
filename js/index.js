@@ -406,7 +406,9 @@ new Vue({
                     }
                     if (el.touch.url) {
                         str += '&t' + idx + '=' + el.touch.url;
-                        str += '&kc' + idx + '=' + encodeURIComponent(Math.floor(el.chromakey[0]/2.55)/100 + ' ' + Math.floor(el.chromakey[1]/2.55)/100 + ' ' + Math.floor(el.chromakey[2]/2.55)/100);
+                        if (el.touch.url.match(/\.mp4$/i)) {
+                            str += '&kc' + idx + '=' + encodeURIComponent(Math.floor(el.chromakey[0]/2.55)/100 + ' ' + Math.floor(el.chromakey[1]/2.55)/100 + ' ' + Math.floor(el.chromakey[2]/2.55)/100);
+                        }
                     }
                 }
             });
