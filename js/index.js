@@ -553,17 +553,19 @@ new Vue({
 
             // URL短縮
             var req = new XMLHttpRequest();
-            req.open('POST', "https://api-ssl.bitly.com/v3/shorten", true);
-            req.setRequestHeader('content-type', 'application/x-www-form-urlencoded;charset=UTF-8');
+            req.open('POST', "https://api-ssl.bitly.com/v4/shorten");
+            req.setRequestHeader('content-type', 'application/json');
+            req.setRequestHeader('authorization', 'Bearer ab4289dd73e917bbcccb230a710d49d43fc85dcc');
             req.onload = function (event) {
                 if (req.readyState === 4) {
 
+                    var qrUrl = null;
+
                     // bitlyの制限に引っかかっても作れるようにはする
-                    if (req.status === 200) {
-                        var qrUrl = eval('(' + req.responseText + ')').data.url;
-                    } else {
-                        var qrUrl = self.viewerUrl;
+                    if (req.status === 200 || req.status === 201) {
+                        qrUrl = eval('(' + req.responseText + ')').link;
                     }
+                    if(!qrUrl) qrUrl = self.viewerUrl;
 
                     var img = new Image();
                     img.crossOrigin = 'Anonymous';
@@ -591,7 +593,9 @@ new Vue({
             req.onerror = function (event) {
                 alert('QRコード生成中にエラーが発生しました。');
             };
-            req.send('domain=j%2emp&longUrl=' + encodeURIComponent(self.viewerUrl) + '&access_token=ea695cba9768d20a417f5162db91ddef4ba81b5c');
+            req.send(JSON.stringify({
+                "long_url": self.viewerUrl
+            }));
         },
         convert2_16: function (numStr) {
             return parseInt(numStr, 2).toString(16);
