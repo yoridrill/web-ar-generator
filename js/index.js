@@ -552,41 +552,39 @@ new Vue({
             self.creatingFlg = true;
 
             // URL短縮
+            var qrUrl = null;
             var req = new XMLHttpRequest();
             req.open('POST', "https://api-ssl.bitly.com/v4/shorten");
             req.setRequestHeader('content-type', 'application/json');
             req.setRequestHeader('authorization', 'Bearer ab4289dd73e917bbcccb230a710d49d43fc85dcc');
             req.onload = function (event) {
                 if (req.readyState === 4) {
-
-                    var qrUrl = null;
-
                     // bitlyの制限に引っかかっても作れるようにはする
                     if (req.status === 200 || req.status === 201) {
                         qrUrl = eval('(' + req.responseText + ')').link;
                     }
-                    if(!qrUrl) qrUrl = self.viewerUrl;
+                    if(qrUrl) {
+                        self.createQrCode(qrUrl);
+                    } else {
+                        var req2 = new XMLHttpRequest();
+                        req2.open('POST', "https://api.tinyurl.com/create");
+                        req2.setRequestHeader('content-type', 'application/json');
+                        req2.setRequestHeader('authorization', 'Bearer XjwGycMZiQFPiV5tYV4utiXTwMGY7Gqzev30eYMLEAOxRdADlGaxrfWL3hsy');
+                        req2.onload = function (event) {
+                            if (req2.readyState === 4) {
 
-                    var img = new Image();
-                    img.crossOrigin = 'Anonymous';
-                    img.src = 'https://chart.apis.google.com/chart?chs=' + (self.optionType==='vr' ? '512x512' : '364x364') + '&cht=qr&chl=' + encodeURIComponent(qrUrl);
-
-                    img.onload = function () {
-                        self.resultFlg = true;
-                        self.creatingFlg = false;
-                        self.drawMarker(0, img);
-                    };
-
-                    if (self.optionType === 'multi') {
-                        var imgMini = new Image();
-                        imgMini.crossOrigin = 'Anonymous';
-                        imgMini.src = 'https://chart.apis.google.com/chart?chs=244x244&cht=qr&chl=' + encodeURIComponent(qrUrl);
-
-                        imgMini.onload = function () {
-                            for (var i = 1; i < 4; i++) {
-                                self.drawMarker(i, imgMini);
+                                if (req2.status === 200 || req2.status === 201) {
+                                    qrUrl = eval('(' + req2.responseText + ')').data.tiny_url;
+                                }
+                                self.createQrCode(qrUrl);
                             }
                         };
+                        req2.onerror = function (event) {
+                            alert('QRコード生成中にエラーが発生しました。');
+                        };
+                        req2.send(JSON.stringify({
+                            "url": self.viewerUrl
+                        }));
                     }
                 }
             };
@@ -596,6 +594,33 @@ new Vue({
             req.send(JSON.stringify({
                 "long_url": self.viewerUrl
             }));
+        },
+        createQrCode: function (qrUrl) {
+            var self = this;
+
+            if(!qrUrl) qrUrl = self.viewerUrl;
+
+            var img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.src = 'https://chart.apis.google.com/chart?chs=' + (self.optionType==='vr' ? '512x512' : '364x364') + '&cht=qr&chl=' + encodeURIComponent(qrUrl);
+
+            img.onload = function () {
+                self.resultFlg = true;
+                self.creatingFlg = false;
+                self.drawMarker(0, img);
+            };
+
+            if (self.optionType === 'multi') {
+                var imgMini = new Image();
+                imgMini.crossOrigin = 'Anonymous';
+                imgMini.src = 'https://chart.apis.google.com/chart?chs=244x244&cht=qr&chl=' + encodeURIComponent(qrUrl);
+
+                imgMini.onload = function () {
+                    for (var i = 1; i < 4; i++) {
+                        self.drawMarker(i, imgMini);
+                    }
+                };
+            }
         },
         convert2_16: function (numStr) {
             return parseInt(numStr, 2).toString(16);
