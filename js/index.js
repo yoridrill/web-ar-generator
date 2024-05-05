@@ -602,8 +602,7 @@ new Vue({
 
             var img = new Image();
             img.crossOrigin = 'Anonymous';
-            img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=' + (self.optionType==='vr' ? '512x512' : '364x364') + '&data=' + encodeURIComponent(qrUrl);
-
+            img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=' + (self.optionType==='vr' ? '512x512' : '364x364') + '&qzone=3&data=' + encodeURIComponent(qrUrl);
 
             img.onload = function () {
                 self.resultFlg = true;
@@ -614,7 +613,7 @@ new Vue({
             if (self.optionType === 'multi') {
                 var imgMini = new Image();
                 imgMini.crossOrigin = 'Anonymous';
-                imgMini.src = 'https://api.qrserver.com/v1/create-qr-code/?size=244x244&data=' + encodeURIComponent(qrUrl);
+                imgMini.src = 'https://api.qrserver.com/v1/create-qr-code/?size=244x244&qzone=3&data=' + encodeURIComponent(qrUrl);
 
                 imgMini.onload = function () {
                     for (var i = 1; i < 4; i++) {
