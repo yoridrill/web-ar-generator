@@ -604,6 +604,7 @@ new Vue({
             img.crossOrigin = 'Anonymous';
             img.src = 'https://api.qrserver.com/v1/create-qr-code/?size=' + (self.optionType==='vr' ? '512x512' : '364x364') + '&data=' + encodeURIComponent(qrUrl);
 
+
             img.onload = function () {
                 self.resultFlg = true;
                 self.creatingFlg = false;
